@@ -16,6 +16,7 @@ a bad merge is silent and dangerous.
 from __future__ import annotations
 
 import logging
+import re
 from collections import defaultdict
 
 from rapidfuzz import fuzz
@@ -122,7 +123,11 @@ class EntityResolver:
         if a.phones & b.phones:
             return True
 
-        # 3. Fuzzy name + company.
+        # 3. GitHub profile match.
+        if a.github_profiles & b.github_profiles:
+            return True
+
+        # 4. Fuzzy name + company.
         if a.name and b.name and a.company and b.company:
             name_score = fuzz.token_sort_ratio(a.name, b.name)
             company_match = a.company == b.company
@@ -141,6 +146,7 @@ class _SourceCandidate:
         self.rfvs = rfvs
         self.emails: set[str] = set()
         self.phones: set[str] = set()
+        self.github_profiles: set[str] = set()
         self.name: str | None = None
         self.company: str | None = None
 
@@ -155,9 +161,31 @@ class _SourceCandidate:
                 phone = normalize_phone(str(rfv.value))
                 if phone:
                     self.phones.add(phone)
+            elif rfv.field == "links.github":
+                github = _normalize_github_profile(str(rfv.value))
+                if github:
+                    self.github_profiles.add(github)
             elif rfv.field == "full_name" and not self.name:
                 self.name = normalize_name(str(rfv.value))
             elif rfv.field == "current_company" and not self.company:
                 val = str(rfv.value).strip().lower()
                 if val:
                     self.company = val
+
+
+def _normalize_github_profile(value: str) -> str | None:
+    """Return a stable username from a GitHub profile URL or username."""
+    raw = value.strip()
+    if not raw:
+        return None
+    raw = re.sub(r"^https?://", "", raw, flags=re.I)
+    raw = re.sub(r"^www\.", "", raw, flags=re.I)
+    if raw.lower().startswith("github.com/"):
+        raw = raw.split("/", 1)[1]
+    elif "/" in raw or "." in raw:
+        return None
+    username = raw.strip().strip("/").split("/", 1)[0]
+    username = re.split(r"[?#]", username, maxsplit=1)[0].lower()
+    if not re.fullmatch(r"[a-z0-9](?:[a-z0-9-]{0,37}[a-z0-9])?", username):
+        return None
+    return username

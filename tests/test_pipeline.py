@@ -72,6 +72,21 @@ class TestEntityResolver:
         clusters2 = resolver2.resolve(rfvs2)
         assert len(clusters2) == 1
 
+    def test_github_profile_link_match(self):
+        """GitHub API, README regex, and README LLM claims should merge."""
+        rfvs = [
+            self._make_rfv("pedamallu umesh gupta", "full_name", "Pedamallu Umesh Gupta", "github_api"),
+            self._make_rfv("pedamallu umesh gupta", "links.github", "https://github.com/umeshgupta05", "github_api"),
+            self._make_rfv("pedamallu umesh gupta", "headline", "Final-year CSE student", "github_readme_regex"),
+            self._make_rfv("pedamallu umesh gupta", "links.github", "https://github.com/umeshgupta05", "github_readme_regex"),
+            self._make_rfv("pedamallu umesh gupta", "full_name", "Umesh Gupta Pedamallu", "github_readme_llm"),
+            self._make_rfv("pedamallu umesh gupta", "links.github", "github.com/umeshgupta05", "github_readme_llm"),
+        ]
+
+        clusters = EntityResolver().resolve(rfvs)
+
+        assert len(clusters) == 1
+
 
 # ======================================================================
 # Merger

@@ -373,6 +373,7 @@ class TestGitHubReadmeExtraction:
         rfvs = ext._extract_readme_regex(readme, "jane", "janedoe")
 
         values = {(r.field, r.value) for r in rfvs}
+        assert ("links.github", "https://github.com/janedoe") in values
         assert ("links.portfolio", "https://janedoe.dev") in values
         assert ("links.linkedin", "https://linkedin.com/in/janedoe") in values
         assert ("headline", "Full-stack engineer building cloud data products.") in values
@@ -524,6 +525,9 @@ class TestResumeExtractor:
         # Sample Candidate
         Backend engineer
 
+        CGPA: 9.36/10. Version 0.3 is documented.
+        Education: B.Tech in Computer Science.
+        Stack: Node.js, React, Python.
         Portfolio: https://sample-candidate.github.io/portfolio/
         Blog: https://dev.to/sample-candidate
         Project docs: https://docs.example.com/sample

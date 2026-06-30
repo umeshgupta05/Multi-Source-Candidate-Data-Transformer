@@ -39,7 +39,7 @@ _README_EMAIL_RE = re.compile(r"[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}
 _README_LINKEDIN_RE = re.compile(r"(?:https?://)?(?:www\.)?linkedin\.com/in/[\w\-._~%]+/?", re.I)
 _README_URL_RE = re.compile(
     r"https?://[^\s)\],;]+|"
-    r"(?:www\.)?[a-zA-Z0-9][a-zA-Z0-9\-]*(?:\.[a-zA-Z0-9][a-zA-Z0-9\-]*)+(?:/[^\s)\],;]*)?",
+    r"(?:www\.)?[a-zA-Z0-9][a-zA-Z0-9\-]*(?:\.[a-zA-Z0-9][a-zA-Z0-9\-]*)*\.[a-zA-Z]{2,}(?:/[^\s)\],;]*)?",
     re.I,
 )
 _README_SKILL_TERMS = [
@@ -297,6 +297,13 @@ class GitHubExtractor(BaseExtractor):
         """Extract candidate hints from profile README markdown without an LLM."""
         cleaned = ResumeExtractor._normalize_text(_strip_markdown(text))
         rfvs: list[RawFieldValue] = []
+        rfvs.append(self._readme_rfv(
+            candidate_key,
+            "links.github",
+            f"https://github.com/{username}",
+            username,
+            "readme_identity",
+        ))
 
         for email in dict.fromkeys(_README_EMAIL_RE.findall(cleaned)):
             rfvs.append(self._readme_rfv(candidate_key, "emails", email.lower(), username, "github_readme_regex"))
@@ -349,6 +356,16 @@ class GitHubExtractor(BaseExtractor):
                 candidate_key_override=candidate_key,
                 metadata={"username": username},
             )
+            if not any(r.field == "links.github" for r in rfvs):
+                rfvs.append(self._make_rfv(
+                    candidate_key=candidate_key,
+                    field="links.github",
+                    value=f"https://github.com/{username}",
+                    source="github_readme_llm",
+                    method="readme_identity",
+                    confidence=_README_LLM_CONFIDENCE,
+                    username=username,
+                ))
         except Exception as exc:
             logger.warning("[%s] README LLM extraction skipped for %s: %s", self.source_name, username, exc)
             return []
@@ -428,6 +445,8 @@ class GitHubExtractor(BaseExtractor):
             lowered = url.lower()
             if any(skip in lowered for skip in ("github.com", "linkedin.com", "shields.io", "github-readme-stats", "img.shields.io")):
                 continue
+            if _looks_like_readme_url_false_positive(url):
+                continue
             if lowered not in {u.lower() for u in urls}:
                 urls.append(url)
         if not urls:
@@ -464,3 +483,18 @@ def _strip_markdown(text: str) -> str:
     text = re.sub(r"<[^>]+>", " ", text)
     text = re.sub(r"`{1,3}([^`]*)`{1,3}", r"\1", text)
     return text
+
+
+def _looks_like_readme_url_false_positive(url: str) -> bool:
+    lowered = url.lower()
+    if lowered.startswith(("http://", "https://", "www.")):
+        return False
+    host = lowered.split("/", 1)[0]
+    labels = host.split(".")
+    if len(labels) < 2:
+        return True
+    if len(labels[0]) <= 1:
+        return True
+    if host in {"node.js", "next.js", "react.js", "vue.js", "express.js", "three.js"}:
+        return True
+    return False

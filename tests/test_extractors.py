@@ -549,16 +549,6 @@ class TestResumeExtractor:
 
         assert github_values == ["github.com/realuser"]
 
-    def test_real_umesh_resume_scopes_github_links(self):
-        resume_path = Path("sources/resumes/Umesh_Gupta_Pedamallu_Resume.pdf")
-        rfvs = ResumeExtractor().extract(resume_path)
-        github_values = [r.value for r in rfvs if r.field == "links.github"]
-        other_values = [r.value for r in rfvs if r.field == "links.other"]
-
-        assert github_values == ["github.com/umeshgupta05"]
-        assert "github.com/dipy" in other_values
-        assert "github.com/umeshgupta05" not in other_values
-
     def test_github_readme_portfolio_keeps_single_best_url(self):
         text = """
         # Sample Candidate

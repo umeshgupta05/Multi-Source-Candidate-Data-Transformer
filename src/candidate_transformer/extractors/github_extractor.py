@@ -430,7 +430,22 @@ class GitHubExtractor(BaseExtractor):
                 continue
             if lowered not in {u.lower() for u in urls}:
                 urls.append(url)
-        return urls[:3]
+        if not urls:
+            return []
+
+        def score(url: str) -> tuple[int, int]:
+            lowered = url.lower()
+            value = 0
+            if any(host in lowered for host in ("github.io", "vercel.app", "netlify.app", "render.com", "pages.dev")):
+                value += 20
+            if any(word in lowered for word in ("portfolio", "personal", "resume", "cv", "about")):
+                value += 10
+            if any(word in lowered for word in ("docs", "blog", "medium.com", "dev.to", "youtube.com", "twitter.com", "x.com")):
+                value -= 10
+            return value, -len(url)
+
+        best = max(urls, key=score)
+        return [best]
 
     @staticmethod
     def _skills_from_readme(text: str) -> list[str]:

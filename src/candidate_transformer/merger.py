@@ -112,9 +112,10 @@ class MergeStats:
         self.null_fields: list[str] = []
 
     def add_conflict(self, field: str, sources: list[str], chosen_source: str):
+        unique_sources = list(dict.fromkeys(sources))
         self.conflicts.append({
             "field": field,
-            "sources": sources,
+            "sources": unique_sources,
             "chosen": chosen_source,
         })
 

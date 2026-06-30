@@ -503,3 +503,18 @@ class TestResumeExtractor:
         assert not any(phone == "11099802" for phone in phones)
         assert not any(value == "B.Tech" for _, value in values)
         assert any(item["institution"].startswith("Example Institute") for item in education)
+
+    def test_github_readme_portfolio_keeps_single_best_url(self):
+        text = """
+        # Sample Candidate
+        Backend engineer
+
+        Portfolio: https://sample-candidate.github.io/portfolio/
+        Blog: https://dev.to/sample-candidate
+        Project docs: https://docs.example.com/sample
+        """
+
+        rfvs = GitHubExtractor()._extract_readme_regex(text, "github:sample-candidate", "sample-candidate")
+        portfolios = [r.value for r in rfvs if r.field == "links.portfolio"]
+
+        assert portfolios == ["https://sample-candidate.github.io/portfolio/"]

@@ -1012,6 +1012,56 @@ body {
     font-size: 0.82rem;
 }
 
+.structured-object {
+    display: grid;
+    gap: 6px;
+}
+
+.structured-object.nested {
+    gap: 5px;
+}
+
+.structured-row {
+    display: grid;
+    grid-template-columns: minmax(104px, max-content) minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+    padding: 3px 0;
+}
+
+.structured-row + .structured-row {
+    border-top: 1px solid rgba(60, 50, 40, 0.06);
+}
+
+.structured-key {
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.structured-value {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    line-height: 1.45;
+}
+
+.field-item-wide .structured-row {
+    grid-template-columns: minmax(104px, 0.18fr) minmax(0, 1fr);
+}
+
+.structured-array {
+    display: grid;
+    gap: 8px;
+}
+
+.structured-array-item {
+    padding: 8px 10px;
+    border: 1px solid rgba(60, 50, 40, 0.08);
+    background: rgba(255, 255, 255, 0.34);
+}
+
 .field-null {
     color: var(--text-muted);
     font-style: normal;

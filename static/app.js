@@ -494,23 +494,27 @@ function renderCandidates(candidates) {
 }
 
 function buildCandidateCard(c, idx) {
-    const name = c.full_name || c.name || c.candidate_id || `Candidate ${idx + 1}`;
+    const nestedCandidate = isPlainObject(c.candidate) ? c.candidate : null;
+    const displaySource = nestedCandidate || c;
+    const name = c.full_name || c.name || nestedCandidate?.name || c.candidate_id || `Candidate ${idx + 1}`;
     const confidence = c.overall_confidence != null ? c.overall_confidence : null;
     const provenance = c.provenance || [];
     const confClass = confidence >= 0.8 ? 'high' : confidence >= 0.5 ? 'medium' : 'low';
     const confPercent = confidence != null ? Math.round(confidence * 100) : null;
 
     // Build fields
-    const skipKeys = new Set(['overall_confidence', 'provenance', 'full_name', 'name', 'error', 'candidate_id']);
+    const skipKeys = new Set(['overall_confidence', 'provenance', 'full_name', 'name', 'error', 'candidate_id', 'candidate']);
     let fieldsHtml = '';
 
     // Name first
-    if (c.full_name || c.name) {
-        fieldsHtml += fieldItem('Full Name', c.full_name || c.name);
+    if (c.full_name || c.name || nestedCandidate?.name) {
+        fieldsHtml += fieldItem(nestedCandidate ? 'Name' : 'Full Name', c.full_name || c.name || nestedCandidate.name);
     }
 
-    // Iterate over keys
-    Object.entries(c).forEach(([key, val]) => {
+    // Iterate over keys. Custom configs may nest projected fields under
+    // "candidate"; render those fields directly instead of stringifying the
+    // wrapper object.
+    Object.entries(displaySource).forEach(([key, val]) => {
         if (skipKeys.has(key)) return;
         if (val === null || val === undefined) {
             fieldsHtml += fieldItem(formatKey(key), null);
@@ -528,8 +532,20 @@ function buildCandidateCard(c, idx) {
             fieldsHtml += educationField(val);
             return;
         }
+        if (key === 'top_skills' && Array.isArray(val)) {
+            fieldsHtml += skillsField(val);
+            return;
+        }
+        if (key === 'current_experience' && isPlainObject(val)) {
+            fieldsHtml += objectField('Current Experience', val);
+            return;
+        }
         if (typeof val === 'object' && !Array.isArray(val)) {
             fieldsHtml += objectField(key, val);
+            return;
+        }
+        if (Array.isArray(val) && val.some(item => isPlainObject(item))) {
+            fieldsHtml += objectField(key, { items: val });
             return;
         }
         if (Array.isArray(val)) {
@@ -689,19 +705,68 @@ function objectField(key, obj) {
     const entries = Object.entries(obj).filter(([, v]) => v !== null && v !== undefined);
     if (entries.length === 0) return fieldItem(formatKey(key), null);
 
-    const html = entries.map(([k, v]) => {
-        if (Array.isArray(v) && v.length > 0) {
-            return `<div><span style="color: var(--text-muted);">${formatKey(k)}:</span> ${v.map(i => escapeHtml(String(i))).join(', ')}</div>`;
-        }
-        return `<div><span style="color: var(--text-muted);">${formatKey(k)}:</span> ${escapeHtml(String(v))}</div>`;
-    }).join('');
+    const hasLongText = entries.some(([, v]) => typeof v === 'string' && v.length > 80);
+    const isWide = entries.some(([, v]) => isComplexValue(v)) || hasLongText || key === 'current_experience' || key === 'Current Experience';
+    const html = entries.map(([k, v]) => `
+        <div class="structured-row">
+            <div class="structured-key">${formatKey(k)}</div>
+            <div class="structured-value">${renderStructuredValue(v)}</div>
+        </div>
+    `).join('');
 
     return `
-        <div class="field-item">
+        <div class="field-item ${isWide ? 'field-item-wide' : ''}">
             <div class="field-label">${formatKey(key)}</div>
-            <div class="field-value" style="font-size: 0.85rem;">${html}</div>
+            <div class="field-value structured-object">${html}</div>
         </div>
     `;
+}
+
+function renderStructuredValue(value) {
+    if (value === null || value === undefined || value === '') {
+        return '<span class="field-null">null</span>';
+    }
+
+    if (Array.isArray(value)) {
+        if (value.length === 0) return '<span class="field-null">[]</span>';
+        if (!value.some(item => isComplexValue(item))) {
+            return escapeHtml(value.map(item => String(item)).join(', '));
+        }
+        return `
+            <div class="structured-array">
+                ${value.map(item => `
+                    <div class="structured-array-item">
+                        ${renderStructuredValue(item)}
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    if (isPlainObject(value)) {
+        const entries = Object.entries(value).filter(([, v]) => v !== null && v !== undefined && v !== '');
+        if (entries.length === 0) return '<span class="field-null">null</span>';
+        return `
+            <div class="structured-object nested">
+                ${entries.map(([k, v]) => `
+                    <div class="structured-row">
+                        <div class="structured-key">${formatKey(k)}</div>
+                        <div class="structured-value">${renderStructuredValue(v)}</div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    return escapeHtml(String(value));
+}
+
+function isPlainObject(value) {
+    return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+function isComplexValue(value) {
+    return isPlainObject(value) || (Array.isArray(value) && value.some(item => isComplexValue(item)));
 }
 
 // ── Provenance Toggle ──────────────────────────────────────────────

@@ -1,0 +1,806 @@
+[
+  {
+    "full_name": "Jane Doe",
+    "primary_email": "jane.doe@example.com",
+    "emails": [
+      "jane.doe@example.com"
+    ],
+    "phone": "+12025550147",
+    "phones": [
+      "+12025550147"
+    ],
+    "location": {
+      "city": "San Francisco",
+      "region": "CA",
+      "country": "US"
+    },
+    "links": {
+      "linkedin": "linkedin.com/in/janedoe",
+      "github": "github.com/jdoe-dev",
+      "portfolio": "jane.doe",
+      "other": []
+    },
+    "headline": "Experienced software engineer with 8+ years building scalable backend systems and cloud infrastructure. Passionate about distributed systems, developer experience, and mentoring junior engineers. Strong communicator with a track record of leading cross-functional initiatives.",
+    "years_experience": 8.0,
+    "skills": [
+      "Python",
+      "Go",
+      "Kubernetes",
+      "AWS",
+      "PostgreSQL",
+      "JavaScript",
+      "TypeScript",
+      "Docker"
+    ],
+    "experience": [
+      {
+        "company": "Acme Corp",
+        "title": "Senior Software Engineer",
+        "start": "2020-03",
+        "end": null,
+        "summary": null
+      },
+      {
+        "company": "PreviousCo",
+        "title": "Software Engineer",
+        "start": "2016-06",
+        "end": "2020-02",
+        "summary": null
+      },
+      {
+        "company": "Led migration of monolithic services to Kubernetes-based microservices",
+        "title": "",
+        "start": "2020-03",
+        "end": null,
+        "summary": "Designed and implemented CI/CD pipelines reducing deploy time by 60% Mentored team of 4 junior engineers on distributed systems patterns Previous Co - Software Engineer"
+      },
+      {
+        "company": "Built real-time data processing pipeline handling 50K events/sec",
+        "title": "",
+        "start": "2016-06",
+        "end": "2020-02",
+        "summary": "Implemented REST APIs serving 10M+ daily requests Contributed to open-source internal tools adopted across 3 teams"
+      }
+    ],
+    "education": [
+      {
+        "institution": "Stanford University",
+        "degree": "M.S.",
+        "field": "Computer Science",
+        "end_year": 2016
+      },
+      {
+        "institution": "Stanford University",
+        "degree": "M.S",
+        "field": "Computer Science",
+        "end_year": 2016
+      }
+    ],
+    "overall_confidence": 0.9236,
+    "provenance": [
+      {
+        "field": "full_name",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      },
+      {
+        "field": "emails",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      },
+      {
+        "field": "phones",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      },
+      {
+        "field": "location.city",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "location.region",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "location.country",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "links.linkedin",
+        "source": "resume_pdf",
+        "method": "regex_extract"
+      },
+      {
+        "field": "links.github",
+        "source": "resume_pdf",
+        "method": "regex_extract"
+      },
+      {
+        "field": "links.portfolio",
+        "source": "resume_pdf",
+        "method": "regex_extract"
+      },
+      {
+        "field": "headline",
+        "source": "resume_pdf",
+        "method": "section_parse"
+      },
+      {
+        "field": "skills.Python",
+        "source": "ats_json, resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.Go",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.Kubernetes",
+        "source": "ats_json, resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.AWS",
+        "source": "ats_json, resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.PostgreSQL",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.JavaScript",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.TypeScript",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.Docker",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "experience",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "experience",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "experience",
+        "source": "resume_pdf",
+        "method": "section_parse"
+      },
+      {
+        "field": "experience",
+        "source": "resume_pdf",
+        "method": "section_parse"
+      },
+      {
+        "field": "education",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "education",
+        "source": "resume_pdf",
+        "method": "section_parse"
+      },
+      {
+        "field": "years_experience",
+        "source": "ats_json",
+        "method": "direct_copy"
+      }
+    ]
+  },
+  {
+    "full_name": "John Smith",
+    "primary_email": "john.smith@techco.io",
+    "emails": [
+      "john.smith@techco.io"
+    ],
+    "phone": "+12125550198",
+    "phones": [
+      "+12125550198"
+    ],
+    "location": {
+      "city": "New York",
+      "region": "NY",
+      "country": "US"
+    },
+    "links": {
+      "linkedin": null,
+      "github": null,
+      "portfolio": null,
+      "other": []
+    },
+    "headline": "Data Scientist",
+    "years_experience": 6.0,
+    "skills": [
+      "Python",
+      "TensorFlow",
+      "PyTorch",
+      "SQL",
+      "Apache Spark"
+    ],
+    "experience": [
+      {
+        "company": "TechCo Inc",
+        "title": "Data Scientist",
+        "start": "2019-03",
+        "end": null,
+        "summary": null
+      },
+      {
+        "company": "DataStartup",
+        "title": "Junior Data Scientist",
+        "start": "2018-01",
+        "end": "2019-02",
+        "summary": null
+      }
+    ],
+    "education": [
+      {
+        "institution": "MIT",
+        "degree": "Ph.D.",
+        "field": "Machine Learning",
+        "end_year": 2018
+      }
+    ],
+    "overall_confidence": 0.945,
+    "provenance": [
+      {
+        "field": "full_name",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      },
+      {
+        "field": "emails",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      },
+      {
+        "field": "phones",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      },
+      {
+        "field": "location.city",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "location.region",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "location.country",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "skills.Python",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.TensorFlow",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.PyTorch",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.SQL",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.Apache Spark",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "experience",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "experience",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "education",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "years_experience",
+        "source": "ats_json",
+        "method": "direct_copy"
+      }
+    ]
+  },
+  {
+    "full_name": "Emily Chen",
+    "primary_email": "emily.chen@startup.dev",
+    "emails": [
+      "emily.chen@startup.dev"
+    ],
+    "phone": "+15125550134",
+    "phones": [
+      "+15125550134"
+    ],
+    "location": {
+      "city": "Austin",
+      "region": "TX",
+      "country": "US"
+    },
+    "links": {
+      "linkedin": null,
+      "github": null,
+      "portfolio": null,
+      "other": []
+    },
+    "headline": "Full Stack Developer",
+    "years_experience": 5.4,
+    "skills": [
+      "JavaScript",
+      "React",
+      "Node.js",
+      "TypeScript",
+      "MongoDB"
+    ],
+    "experience": [
+      {
+        "company": "InnovateLabs",
+        "title": "Full Stack Developer",
+        "start": "2021-01",
+        "end": null,
+        "summary": null
+      }
+    ],
+    "education": [
+      {
+        "institution": "UT Austin",
+        "degree": "B.S.",
+        "field": "Computer Science",
+        "end_year": 2020
+      }
+    ],
+    "overall_confidence": 0.91,
+    "provenance": [
+      {
+        "field": "full_name",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      },
+      {
+        "field": "emails",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      },
+      {
+        "field": "phones",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      },
+      {
+        "field": "location.city",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "location.region",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "location.country",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "skills.JavaScript",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.React",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.Node.js",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.TypeScript",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.MongoDB",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "experience",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "education",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "years_experience",
+        "source": "derived",
+        "method": "computed_from_experience_dates"
+      }
+    ]
+  },
+  {
+    "full_name": null,
+    "primary_email": "missing_name@example.com",
+    "emails": [
+      "missing_name@example.com"
+    ],
+    "phone": "+447911123456",
+    "phones": [
+      "+447911123456"
+    ],
+    "location": {
+      "city": null,
+      "region": null,
+      "country": null
+    },
+    "links": {
+      "linkedin": null,
+      "github": null,
+      "portfolio": null,
+      "other": []
+    },
+    "headline": "DevOps Engineer",
+    "years_experience": null,
+    "skills": [],
+    "experience": [],
+    "education": [],
+    "overall_confidence": 0.19,
+    "provenance": [
+      {
+        "field": "emails",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      },
+      {
+        "field": "phones",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      }
+    ]
+  },
+  {
+    "full_name": "Bob Wilson",
+    "primary_email": "bob.wilson@example.com",
+    "emails": [
+      "bob.wilson@example.com"
+    ],
+    "phone": null,
+    "phones": [],
+    "location": {
+      "city": null,
+      "region": null,
+      "country": null
+    },
+    "links": {
+      "linkedin": null,
+      "github": null,
+      "portfolio": null,
+      "other": []
+    },
+    "headline": "Backend Developer",
+    "years_experience": null,
+    "skills": [],
+    "experience": [],
+    "education": [],
+    "overall_confidence": 0.19,
+    "provenance": [
+      {
+        "field": "full_name",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      },
+      {
+        "field": "emails",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      }
+    ]
+  },
+  {
+    "full_name": "Alice Johnson",
+    "primary_email": null,
+    "emails": [],
+    "phone": "+16505550189",
+    "phones": [
+      "+16505550189"
+    ],
+    "location": {
+      "city": null,
+      "region": null,
+      "country": null
+    },
+    "links": {
+      "linkedin": null,
+      "github": null,
+      "portfolio": null,
+      "other": []
+    },
+    "headline": "ML Engineer",
+    "years_experience": null,
+    "skills": [],
+    "experience": [],
+    "education": [],
+    "overall_confidence": 0.19,
+    "provenance": [
+      {
+        "field": "full_name",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      },
+      {
+        "field": "phones",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      }
+    ]
+  },
+  {
+    "full_name": "Umesh Gupta Pedamallu",
+    "primary_email": "saiumeshgupta@gmail.com",
+    "emails": [
+      "saiumeshgupta@gmail.com"
+    ],
+    "phone": "+916281784716",
+    "phones": [
+      "+916281784716"
+    ],
+    "location": {
+      "city": "Vijayawada",
+      "region": null,
+      "country": "IN"
+    },
+    "links": {
+      "linkedin": "linkedin.com/in/umesh-gupta",
+      "github": "github.com/umeshgupta05",
+      "portfolio": "umeshguptapedamallu.in",
+      "other": [
+        "linkedin.com/in/umesh-gupta-pedamallu-9504b825a",
+        "github.com/dipy"
+      ]
+    },
+    "headline": "Enthusiastic and detail-oriented Computer Science graduate with a strong interest in software development, cloud technologies, and problem-solving. Experienced in building full-stack applications, developing AI-powered tools, and working with databases. Passionate about learning new technologies, collaborating in team environments, and contributing to impactful projects through hands-on experience.",
+    "years_experience": 0.4,
+    "skills": [
+      "Python",
+      "Java",
+      "JavaScript",
+      "Redux",
+      "Node.js",
+      "Docker",
+      "AWS",
+      "MySQL",
+      "MongoDB",
+      "Machine Learning",
+      "GitHub",
+      "Git",
+      "Oop",
+      "Data Structures & Algorithms",
+      "Problem Solving",
+      "Agile/Scrum"
+    ],
+    "experience": [
+      {
+        "company": "Infosys Springboard",
+        "title": "Java Full Stack Virtual Intern",
+        "start": "2026-02",
+        "end": "2026-04",
+        "summary": "Engineered a two-role digital agriculture marketplace enabling farmers to manage product listings, pricing, inventory, and sales, while allowing retailers to search produce, place or modify orders, complete transactions, and submit feedback. Architected a four-service Spring Boot ecosystem using Config Server, Eureka, and API Gateway for centralized configuration, service discovery, and load-balanced routing. Developed five RESTful user-management APIs using Spring Boot, JPA/Hibernate, and MySQL with DTOs, validation, role-based access, and exception handling, while improving maintainability through externalized configuration."
+      },
+      {
+        "company": "SkillDzire Technologies Pvt. Ltd",
+        "title": "Web Developer & Cloud Integration Intern",
+        "start": "2025-11",
+        "end": "2026-03",
+        "summary": "Developed and deployed 3 full-stack applications, improving performance and responsiveness by 25%. Integrated cloud services (AWS/Cloud) for hosting, storage, and deployment, reducing manual effort by 40%. Designed 10 RESTful APIs with authentication and database integration, reducing data retrieval time by 30%. Improved scalability using modular architecture and clean code, reducing bug resolution time by 20%."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Bachelor of Technology in Computer Science and Engineering 2022 \u2013 2026",
+        "degree": "Bachelor of Technology",
+        "field": "Computer Science and Engineering",
+        "end_year": 2026
+      },
+      {
+        "institution": "Velagapudi Ramakrishna Siddhartha Engineering College, Vijayawada",
+        "degree": "Intermediate",
+        "field": "Mathematics, Physics, Chemistry",
+        "end_year": 2022
+      }
+    ],
+    "overall_confidence": 0.684,
+    "provenance": [
+      {
+        "field": "full_name",
+        "source": "resume_pdf",
+        "method": "first_line_heuristic"
+      },
+      {
+        "field": "emails",
+        "source": "resume_pdf",
+        "method": "regex_extract"
+      },
+      {
+        "field": "phones",
+        "source": "resume_pdf",
+        "method": "regex_extract"
+      },
+      {
+        "field": "location.city",
+        "source": "resume_pdf",
+        "method": "contact_location_parse"
+      },
+      {
+        "field": "location.country",
+        "source": "resume_pdf",
+        "method": "contact_location_parse"
+      },
+      {
+        "field": "links.linkedin",
+        "source": "resume_pdf",
+        "method": "regex_extract"
+      },
+      {
+        "field": "links.github",
+        "source": "resume_pdf",
+        "method": "regex_extract"
+      },
+      {
+        "field": "links.portfolio",
+        "source": "resume_pdf",
+        "method": "regex_extract"
+      },
+      {
+        "field": "headline",
+        "source": "resume_pdf",
+        "method": "section_parse"
+      },
+      {
+        "field": "skills.Python",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.Java",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.JavaScript",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.Redux",
+        "source": "resume_pdf",
+        "method": "passthrough"
+      },
+      {
+        "field": "skills.Node.js",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.Docker",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.AWS",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.MySQL",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.MongoDB",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.Machine Learning",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.GitHub",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.Git",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.Oop",
+        "source": "resume_pdf",
+        "method": "passthrough"
+      },
+      {
+        "field": "skills.Data Structures & Algorithms",
+        "source": "resume_pdf",
+        "method": "passthrough"
+      },
+      {
+        "field": "skills.Problem Solving",
+        "source": "resume_pdf",
+        "method": "passthrough"
+      },
+      {
+        "field": "skills.Agile/Scrum",
+        "source": "resume_pdf",
+        "method": "passthrough"
+      },
+      {
+        "field": "experience",
+        "source": "resume_pdf",
+        "method": "section_parse"
+      },
+      {
+        "field": "experience",
+        "source": "resume_pdf",
+        "method": "section_parse"
+      },
+      {
+        "field": "education",
+        "source": "resume_pdf",
+        "method": "section_parse"
+      },
+      {
+        "field": "education",
+        "source": "resume_pdf",
+        "method": "section_parse"
+      },
+      {
+        "field": "years_experience",
+        "source": "derived",
+        "method": "computed_from_experience_dates"
+      }
+    ]
+  }
+]

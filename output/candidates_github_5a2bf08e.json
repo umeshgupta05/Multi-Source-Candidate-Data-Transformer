@@ -1,0 +1,61 @@
+[
+  {
+    "full_name": "The Octocat",
+    "primary_email": null,
+    "emails": [],
+    "phone": null,
+    "phones": [],
+    "location": {
+      "city": "San Francisco",
+      "region": null,
+      "country": null
+    },
+    "links": {
+      "linkedin": null,
+      "github": "https://github.com/octocat",
+      "portfolio": "https://github.blog",
+      "other": []
+    },
+    "headline": null,
+    "years_experience": null,
+    "skills": [
+      "CSS",
+      "HTML"
+    ],
+    "experience": [],
+    "education": [],
+    "overall_confidence": 0.25,
+    "provenance": [
+      {
+        "field": "full_name",
+        "source": "github_api",
+        "method": "api_field"
+      },
+      {
+        "field": "location.city",
+        "source": "github_api",
+        "method": "api_field"
+      },
+      {
+        "field": "links.github",
+        "source": "github_api",
+        "method": "api_field"
+      },
+      {
+        "field": "links.portfolio",
+        "source": "github_api",
+        "method": "api_field"
+      },
+      {
+        "field": "skills.CSS",
+        "source": "github_api",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.HTML",
+        "source": "github_api",
+        "method": "taxonomy_match"
+      }
+    ]
+  }
+]

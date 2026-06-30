@@ -1,0 +1,389 @@
+[
+  {
+    "full_name": "Jane Doe",
+    "primary_email": "jane.doe@example.com",
+    "emails": [
+      "jane.doe@example.com"
+    ],
+    "phone": "+12025550147",
+    "phones": [
+      "+12025550147"
+    ],
+    "location": {
+      "city": "San Francisco",
+      "region": "CA",
+      "country": "US"
+    },
+    "links": {
+      "linkedin": null,
+      "github": null,
+      "portfolio": null,
+      "other": []
+    },
+    "headline": "Sr. Software Engineer",
+    "years_experience": 8.0,
+    "skills": [
+      "Python",
+      "Go",
+      "Kubernetes",
+      "AWS",
+      "PostgreSQL"
+    ],
+    "experience": [
+      {
+        "company": "Acme Corp",
+        "title": "Senior Software Engineer",
+        "start": "2020-03",
+        "end": null,
+        "summary": null
+      },
+      {
+        "company": "PreviousCo",
+        "title": "Software Engineer",
+        "start": "2016-06",
+        "end": "2020-02",
+        "summary": null
+      }
+    ],
+    "education": [
+      {
+        "institution": "Stanford University",
+        "degree": "M.S.",
+        "field": "Computer Science",
+        "end_year": 2016
+      }
+    ],
+    "overall_confidence": 0.93,
+    "provenance": [
+      {
+        "field": "full_name",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "emails",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "phones",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "location.city",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "location.region",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "location.country",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "skills.Python",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.Go",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.Kubernetes",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.AWS",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.PostgreSQL",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "experience",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "experience",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "education",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "years_experience",
+        "source": "ats_json",
+        "method": "direct_copy"
+      }
+    ]
+  },
+  {
+    "full_name": "John Smith",
+    "primary_email": "john.smith@techco.io",
+    "emails": [
+      "john.smith@techco.io"
+    ],
+    "phone": "+12125550198",
+    "phones": [
+      "+12125550198"
+    ],
+    "location": {
+      "city": "New York",
+      "region": "NY",
+      "country": "US"
+    },
+    "links": {
+      "linkedin": null,
+      "github": null,
+      "portfolio": null,
+      "other": []
+    },
+    "headline": "Senior Data Scientist",
+    "years_experience": 6.0,
+    "skills": [
+      "Python",
+      "TensorFlow",
+      "PyTorch",
+      "SQL",
+      "Apache Spark"
+    ],
+    "experience": [
+      {
+        "company": "TechCo Inc",
+        "title": "Data Scientist",
+        "start": "2019-03",
+        "end": null,
+        "summary": null
+      },
+      {
+        "company": "DataStartup",
+        "title": "Junior Data Scientist",
+        "start": "2018-01",
+        "end": "2019-02",
+        "summary": null
+      }
+    ],
+    "education": [
+      {
+        "institution": "MIT",
+        "degree": "Ph.D.",
+        "field": "Machine Learning",
+        "end_year": 2018
+      }
+    ],
+    "overall_confidence": 0.93,
+    "provenance": [
+      {
+        "field": "full_name",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "emails",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "phones",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "location.city",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "location.region",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "location.country",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "skills.Python",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.TensorFlow",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.PyTorch",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.SQL",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.Apache Spark",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "experience",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "experience",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "education",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "years_experience",
+        "source": "ats_json",
+        "method": "direct_copy"
+      }
+    ]
+  },
+  {
+    "full_name": "Emily Chen",
+    "primary_email": "emily.chen@startup.dev",
+    "emails": [
+      "emily.chen@startup.dev"
+    ],
+    "phone": "+15125550134",
+    "phones": [
+      "+15125550134"
+    ],
+    "location": {
+      "city": "Austin",
+      "region": "TX",
+      "country": "US"
+    },
+    "links": {
+      "linkedin": null,
+      "github": null,
+      "portfolio": null,
+      "other": []
+    },
+    "headline": "Full-Stack Developer",
+    "years_experience": 5.5,
+    "skills": [
+      "JavaScript",
+      "React",
+      "Node.js",
+      "TypeScript",
+      "MongoDB"
+    ],
+    "experience": [
+      {
+        "company": "InnovateLabs",
+        "title": "Full Stack Developer",
+        "start": "2021-01",
+        "end": null,
+        "summary": null
+      }
+    ],
+    "education": [
+      {
+        "institution": "UT Austin",
+        "degree": "B.S.",
+        "field": "Computer Science",
+        "end_year": 2020
+      }
+    ],
+    "overall_confidence": 0.895,
+    "provenance": [
+      {
+        "field": "full_name",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "emails",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "phones",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "location.city",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "location.region",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "location.country",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "skills.JavaScript",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.React",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.Node.js",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.TypeScript",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.MongoDB",
+        "source": "ats_json",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "experience",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "education",
+        "source": "ats_json",
+        "method": "direct_copy"
+      },
+      {
+        "field": "years_experience",
+        "source": "derived",
+        "method": "computed_from_experience_dates"
+      }
+    ]
+  }
+]

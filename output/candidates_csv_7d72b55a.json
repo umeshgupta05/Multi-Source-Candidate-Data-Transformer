@@ -1,0 +1,253 @@
+[
+  {
+    "full_name": "Jane Doe",
+    "primary_email": "jane.doe@example.com",
+    "emails": [
+      "jane.doe@example.com"
+    ],
+    "phone": "+12025550147",
+    "phones": [
+      "+12025550147"
+    ],
+    "location": {
+      "city": null,
+      "region": null,
+      "country": null
+    },
+    "links": {
+      "linkedin": null,
+      "github": null,
+      "portfolio": null,
+      "other": []
+    },
+    "headline": "Senior Software Engineer",
+    "years_experience": null,
+    "skills": [],
+    "experience": [],
+    "education": [],
+    "overall_confidence": 0.285,
+    "provenance": [
+      {
+        "field": "full_name",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      },
+      {
+        "field": "emails",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      },
+      {
+        "field": "phones",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      }
+    ]
+  },
+  {
+    "full_name": "John Smith",
+    "primary_email": "john.smith@techco.io",
+    "emails": [
+      "john.smith@techco.io"
+    ],
+    "phone": "+12125550198",
+    "phones": [
+      "+12125550198"
+    ],
+    "location": {
+      "city": null,
+      "region": null,
+      "country": null
+    },
+    "links": {
+      "linkedin": null,
+      "github": null,
+      "portfolio": null,
+      "other": []
+    },
+    "headline": "Data Scientist",
+    "years_experience": null,
+    "skills": [],
+    "experience": [],
+    "education": [],
+    "overall_confidence": 0.285,
+    "provenance": [
+      {
+        "field": "full_name",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      },
+      {
+        "field": "emails",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      },
+      {
+        "field": "phones",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      }
+    ]
+  },
+  {
+    "full_name": "Emily Chen",
+    "primary_email": "emily.chen@startup.dev",
+    "emails": [
+      "emily.chen@startup.dev"
+    ],
+    "phone": "+15125550134",
+    "phones": [
+      "+15125550134"
+    ],
+    "location": {
+      "city": null,
+      "region": null,
+      "country": null
+    },
+    "links": {
+      "linkedin": null,
+      "github": null,
+      "portfolio": null,
+      "other": []
+    },
+    "headline": "Full Stack Developer",
+    "years_experience": null,
+    "skills": [],
+    "experience": [],
+    "education": [],
+    "overall_confidence": 0.285,
+    "provenance": [
+      {
+        "field": "full_name",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      },
+      {
+        "field": "emails",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      },
+      {
+        "field": "phones",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      }
+    ]
+  },
+  {
+    "full_name": null,
+    "primary_email": "missing_name@example.com",
+    "emails": [
+      "missing_name@example.com"
+    ],
+    "phone": "+447911123456",
+    "phones": [
+      "+447911123456"
+    ],
+    "location": {
+      "city": null,
+      "region": null,
+      "country": null
+    },
+    "links": {
+      "linkedin": null,
+      "github": null,
+      "portfolio": null,
+      "other": []
+    },
+    "headline": "DevOps Engineer",
+    "years_experience": null,
+    "skills": [],
+    "experience": [],
+    "education": [],
+    "overall_confidence": 0.19,
+    "provenance": [
+      {
+        "field": "emails",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      },
+      {
+        "field": "phones",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      }
+    ]
+  },
+  {
+    "full_name": "Bob Wilson",
+    "primary_email": "bob.wilson@example.com",
+    "emails": [
+      "bob.wilson@example.com"
+    ],
+    "phone": null,
+    "phones": [],
+    "location": {
+      "city": null,
+      "region": null,
+      "country": null
+    },
+    "links": {
+      "linkedin": null,
+      "github": null,
+      "portfolio": null,
+      "other": []
+    },
+    "headline": "Backend Developer",
+    "years_experience": null,
+    "skills": [],
+    "experience": [],
+    "education": [],
+    "overall_confidence": 0.19,
+    "provenance": [
+      {
+        "field": "full_name",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      },
+      {
+        "field": "emails",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      }
+    ]
+  },
+  {
+    "full_name": "Alice Johnson",
+    "primary_email": null,
+    "emails": [],
+    "phone": "+16505550189",
+    "phones": [
+      "+16505550189"
+    ],
+    "location": {
+      "city": null,
+      "region": null,
+      "country": null
+    },
+    "links": {
+      "linkedin": null,
+      "github": null,
+      "portfolio": null,
+      "other": []
+    },
+    "headline": "ML Engineer",
+    "years_experience": null,
+    "skills": [],
+    "experience": [],
+    "education": [],
+    "overall_confidence": 0.19,
+    "provenance": [
+      {
+        "field": "full_name",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      },
+      {
+        "field": "phones",
+        "source": "recruiter_csv",
+        "method": "direct_copy"
+      }
+    ]
+  }
+]

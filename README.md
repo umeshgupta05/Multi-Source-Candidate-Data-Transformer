@@ -201,8 +201,10 @@ Entity resolution:
 
 - Match first by normalized email.
 - Then by normalized phone.
+- Then by normalized GitHub profile link.
 - Then by fuzzy full name plus same company at score `>= 90`.
 - Prefer under-merging over unsafe over-merging.
+- Uses exact-key indexes and same-company fuzzy blocking to stay near-linear at thousands-of-candidates scale instead of doing naive pairwise comparison.
 
 Merge policy:
 

@@ -44,22 +44,28 @@ class EntityResolver:
             ``{cluster_id: [RawFieldValue, ...]}`` — one cluster per
             resolved candidate entity.
         """
-        # Build per-source-candidate buckets from candidate_key.
-        # Each unique candidate_key from a source is a "source candidate".
         source_candidates: list[_SourceCandidate] = self._build_source_candidates(all_rfvs)
-
-        # Merge source candidates into clusters.
         clusters: list[list[_SourceCandidate]] = []
+        email_index: dict[str, set[int]] = defaultdict(set)
+        phone_index: dict[str, set[int]] = defaultdict(set)
+        github_index: dict[str, set[int]] = defaultdict(set)
+        company_index: dict[str, list[int]] = defaultdict(list)
 
         for sc in source_candidates:
-            merged = False
-            for cluster in clusters:
-                if self._matches_cluster(sc, cluster):
-                    cluster.append(sc)
-                    merged = True
-                    break
-            if not merged:
+            cluster_idx = self._find_cluster_index(
+                sc,
+                clusters,
+                email_index,
+                phone_index,
+                github_index,
+                company_index,
+            )
+            if cluster_idx is None:
+                cluster_idx = len(clusters)
                 clusters.append([sc])
+            else:
+                clusters[cluster_idx].append(sc)
+            self._update_indexes(sc, cluster_idx, email_index, phone_index, github_index, company_index)
 
         # Flatten clusters → dict of {cluster_id: [RFVs]}.
         result: dict[str, list[RawFieldValue]] = {}
@@ -80,6 +86,55 @@ class EntityResolver:
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------
+
+    def _find_cluster_index(
+        self,
+        sc: "_SourceCandidate",
+        clusters: list[list["_SourceCandidate"]],
+        email_index: dict[str, set[int]],
+        phone_index: dict[str, set[int]],
+        github_index: dict[str, set[int]],
+        company_index: dict[str, list[int]],
+    ) -> int | None:
+        """Find the earliest existing cluster that matches this source candidate."""
+        exact_hits: set[int] = set()
+        for email in sc.emails:
+            exact_hits.update(email_index.get(email, set()))
+        for phone in sc.phones:
+            exact_hits.update(phone_index.get(phone, set()))
+        for github in sc.github_profiles:
+            exact_hits.update(github_index.get(github, set()))
+
+        for idx in sorted(exact_hits):
+            if self._matches_cluster(sc, clusters[idx]):
+                return idx
+
+        if not (sc.name and sc.company):
+            return None
+
+        for idx in company_index.get(sc.company, []):
+            if self._matches_cluster(sc, clusters[idx]):
+                return idx
+        return None
+
+    @staticmethod
+    def _update_indexes(
+        sc: "_SourceCandidate",
+        cluster_idx: int,
+        email_index: dict[str, set[int]],
+        phone_index: dict[str, set[int]],
+        github_index: dict[str, set[int]],
+        company_index: dict[str, list[int]],
+    ) -> None:
+        """Add a placed source candidate to the resolver lookup indexes."""
+        for email in sc.emails:
+            email_index[email].add(cluster_idx)
+        for phone in sc.phones:
+            phone_index[phone].add(cluster_idx)
+        for github in sc.github_profiles:
+            github_index[github].add(cluster_idx)
+        if sc.company and cluster_idx not in company_index[sc.company]:
+            company_index[sc.company].append(cluster_idx)
 
     def _build_source_candidates(
         self, all_rfvs: list[RawFieldValue]
@@ -113,7 +168,8 @@ class EntityResolver:
         Priority:
         1. Exact normalized email match.
         2. Exact E.164 phone match.
-        3. Fuzzy name + company match (both must pass).
+        3. Exact GitHub profile match.
+        4. Fuzzy name + company match (both must pass).
         """
         # 1. Email match.
         if a.emails & b.emails:

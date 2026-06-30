@@ -1,5 +1,7 @@
 """Unit tests for entity resolver, merger, and projector."""
 
+import time
+
 import pytest
 
 from candidate_transformer.models.raw import RawFieldValue
@@ -87,10 +89,102 @@ class TestEntityResolver:
 
         assert len(clusters) == 1
 
+    def test_indexed_resolution_matches_bruteforce_reference(self):
+        """Indexed resolution should preserve the old clustering behavior."""
+        rfvs = []
+        for i in range(120):
+            company = f"company-{i % 12}"
+            name = f"Candidate {i}"
+            source = "resume_pdf" if i % 2 else "ats_json"
+            rfvs.extend([
+                self._make_rfv(f"cand-{i}", "full_name", name, source),
+                self._make_rfv(f"cand-{i}", "current_company", company, source),
+            ])
+
+        # Add deliberate fuzzy/company duplicates and exact-key duplicates.
+        for i in range(20):
+            company = f"company-{i % 12}"
+            rfvs.extend([
+                self._make_rfv(f"dup-{i}", "full_name", f"Candidate {i}", "github_readme_regex"),
+                self._make_rfv(f"dup-{i}", "current_company", company, "github_readme_regex"),
+            ])
+        rfvs.extend([
+            self._make_rfv("email-a", "emails", "shared@example.com", "recruiter_csv"),
+            self._make_rfv("email-a", "full_name", "Shared Email", "recruiter_csv"),
+            self._make_rfv("email-b", "emails", "shared@example.com", "ats_json"),
+            self._make_rfv("email-b", "full_name", "Different Name", "ats_json"),
+            self._make_rfv("gh-a", "links.github", "https://github.com/example-user", "github_api"),
+            self._make_rfv("gh-b", "links.github", "github.com/example-user", "github_readme_regex"),
+        ])
+
+        resolver = EntityResolver()
+        indexed = resolver.resolve(rfvs)
+        brute = _bruteforce_resolve(resolver, rfvs)
+
+        assert _cluster_fingerprint(indexed) == _cluster_fingerprint(brute)
+
+    def test_indexed_resolution_scales_on_fuzzy_path(self):
+        """Thousands of no-email/no-phone candidates should avoid global O(n^2) scans."""
+        rfvs = []
+        pairs = 1000
+        companies = 250
+        for i in range(pairs):
+            company = f"company-{i % companies}"
+            name = f"Scale Candidate {i}"
+            rfvs.extend([
+                self._make_rfv(f"left-{i}", "full_name", name, "resume_pdf"),
+                self._make_rfv(f"left-{i}", "current_company", company, "resume_pdf"),
+                self._make_rfv(f"right-{i}", "full_name", name, "ats_json"),
+                self._make_rfv(f"right-{i}", "current_company", company, "ats_json"),
+            ])
+
+        t0 = time.perf_counter()
+        clusters = EntityResolver().resolve(rfvs)
+        elapsed = time.perf_counter() - t0
+
+        assert elapsed < 3.0
+        resolved_keys = {
+            rfv.candidate_key
+            for cluster in clusters.values()
+            for rfv in cluster
+        }
+        assert len(resolved_keys) == pairs * 2
+
 
 # ======================================================================
 # Merger
 # ======================================================================
+
+
+def _cluster_fingerprint(clusters: dict[str, list[RawFieldValue]]) -> list[tuple[str, ...]]:
+    return sorted(
+        tuple(sorted({rfv.candidate_key for rfv in rfvs}))
+        for rfvs in clusters.values()
+    )
+
+
+def _bruteforce_resolve(
+    resolver: EntityResolver,
+    rfvs: list[RawFieldValue],
+) -> dict[str, list[RawFieldValue]]:
+    source_candidates = resolver._build_source_candidates(rfvs)
+    clusters = []
+    for sc in source_candidates:
+        for cluster in clusters:
+            if resolver._matches_cluster(sc, cluster):
+                cluster.append(sc)
+                break
+        else:
+            clusters.append([sc])
+
+    result = {}
+    for idx, cluster in enumerate(clusters):
+        cluster_rfvs = []
+        for sc in cluster:
+            cluster_rfvs.extend(sc.rfvs)
+        result[f"cluster_{idx}"] = cluster_rfvs
+    return result
+
 
 class TestMerger:
     def _make_rfv(self, field, value, source, method="direct_copy", confidence=0.95):

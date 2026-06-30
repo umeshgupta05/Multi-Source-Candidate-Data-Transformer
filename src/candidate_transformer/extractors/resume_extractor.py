@@ -40,7 +40,7 @@ _URL_RE = re.compile(
     r"(?<![@\w./-])"
     r"(?:(?:https?://)?(?:www\.)?)"
     r"(?!linkedin\.com|github\.com)"
-    r"[a-zA-Z0-9][a-zA-Z0-9\-]*(?:\.[a-zA-Z0-9][a-zA-Z0-9\-]*)+"
+    r"[a-zA-Z0-9][a-zA-Z0-9\-]*(?:\.[a-zA-Z0-9][a-zA-Z0-9\-]*)*\.[a-zA-Z]{2,}"
     r"(?:/[^\s,;]*)?"
     r"(?![\w.-])",
     re.I,
@@ -107,6 +107,13 @@ _KNOWN_SKILL_TERMS = [
 ]
 _DEGREE_DOMAIN_RE = re.compile(r"^(?:B|M|BSc|MSc|PhD|B\.?Tech|M\.?Tech)\.?(?:Tech|Sc|A|S|E)?$", re.I)
 _URL_SKIP_DOMAINS = ("ieeexplore.ieee.org", "leetcode.com", "codechef.com", "hackerrank.com")
+
+
+def _normalize_url(raw: str) -> str:
+    url = raw.strip().strip("()[]{}<>").rstrip(").,;")
+    url = re.sub(r"^https?://", "", url, flags=re.I)
+    url = re.sub(r"^www\.", "", url, flags=re.I)
+    return url.rstrip("/")
 
 
 class ResumeExtractor(BaseExtractor):
@@ -187,8 +194,9 @@ class ResumeExtractor(BaseExtractor):
         # --- Contact info via regex (whole document) ---
         emails = list(dict.fromkeys(email.strip() for email in _EMAIL_RE.findall(text)))
         phone_matches = list(_PHONE_RE.finditer(text))
-        linkedin_matches = list(dict.fromkeys(url.strip() for url in _LINKEDIN_RE.findall(text)))
-        github_matches = list(dict.fromkeys(url.strip().rstrip("/") for url in _GITHUB_RE.findall(text)))
+        contact_text, body_text = self._split_contact_and_body_text(lines)
+        linkedin_matches = self._extract_normalized_urls(_LINKEDIN_RE, contact_text)
+        github_matches = self._extract_normalized_urls(_GITHUB_RE, contact_text)
 
         # Candidate key: first email found, or first line (likely the name).
         first_email = emails[0].lower() if emails else None
@@ -248,11 +256,24 @@ class ResumeExtractor(BaseExtractor):
                 confidence=_CONF_REGEX,
             ))
 
-        for url in self._extract_portfolio_urls(text, linkedin_matches, github_matches):
+        portfolio_matches = self._extract_portfolio_urls(contact_text, linkedin_matches, github_matches)
+        for url in portfolio_matches:
             rfvs.append(self._make_rfv(
                 candidate_key=candidate_key,
                 field="links.portfolio",
-                value=url.strip(),
+                value=url,
+                source=self.source_name,
+                method="regex_extract",
+                confidence=_CONF_REGEX,
+            ))
+
+        # Body profile-shaped URLs are references, not canonical candidate links.
+        canonical_links = set(linkedin_matches + github_matches + portfolio_matches)
+        for url in self._extract_other_links(body_text, canonical_links):
+            rfvs.append(self._make_rfv(
+                candidate_key=candidate_key,
+                field="links.other",
+                value=url,
                 source=self.source_name,
                 method="regex_extract",
                 confidence=_CONF_REGEX,
@@ -795,13 +816,13 @@ class ResumeExtractor(BaseExtractor):
         linkedin_matches: list[str],
         github_matches: list[str],
     ) -> list[str]:
-        excluded = {u.lower().rstrip("/") for u in linkedin_matches + github_matches}
+        excluded = {_normalize_url(u) for u in linkedin_matches + github_matches}
         seen: set[str] = set()
         urls: list[str] = []
         scan_text = text
         for raw in _URL_RE.findall(scan_text):
-            url = raw.strip().rstrip(").,;")
-            lowered = url.lower().rstrip("/")
+            url = _normalize_url(raw)
+            lowered = url.lower()
             domain = lowered.split("/", 1)[0]
             if lowered[0].isdigit():
                 continue
@@ -821,6 +842,45 @@ class ResumeExtractor(BaseExtractor):
                 seen.add(lowered)
                 urls.append(url)
         return urls[:3]
+
+    @staticmethod
+    def _split_contact_and_body_text(lines: list[str]) -> tuple[str, str]:
+        contact_line_indexes: set[int] = set()
+        for idx, line in enumerate(lines[:12]):
+            if idx > 0 and any(pattern.match(line) for name, pattern in _SECTION_PATTERNS.items() if name != "contact"):
+                break
+            if idx < 5 or _EMAIL_RE.search(line) or _PHONE_RE.search(line) or _LINKEDIN_RE.search(line) or _GITHUB_RE.search(line) or _URL_RE.search(line):
+                contact_line_indexes.add(idx)
+
+        contact_lines = [line for idx, line in enumerate(lines) if idx in contact_line_indexes]
+        body_lines = [line for idx, line in enumerate(lines) if idx not in contact_line_indexes]
+        return "\n".join(contact_lines), "\n".join(body_lines)
+
+    @staticmethod
+    def _extract_normalized_urls(pattern: re.Pattern, text: str) -> list[str]:
+        seen: set[str] = set()
+        urls: list[str] = []
+        for raw in pattern.findall(text):
+            url = _normalize_url(raw)
+            if url and url not in seen:
+                seen.add(url)
+                urls.append(url)
+        return urls
+
+    @classmethod
+    def _extract_other_links(cls, text: str, canonical_links: set[str]) -> list[str]:
+        seen: set[str] = set()
+        urls: list[str] = []
+        for raw in _LINKEDIN_RE.findall(text) + _GITHUB_RE.findall(text):
+            url = _normalize_url(raw)
+            if url and url not in canonical_links and url not in seen:
+                seen.add(url)
+                urls.append(url)
+        for url in cls._extract_portfolio_urls(text, [], []):
+            if url and url not in canonical_links and url not in seen:
+                seen.add(url)
+                urls.append(url)
+        return urls
 
     @staticmethod
     def _is_likely_phone_match(text: str, match: re.Match) -> bool:

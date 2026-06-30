@@ -510,15 +510,54 @@ class TestResumeExtractor:
         education = [r.value for r in rfvs if r.field == "education"]
 
         assert ("full_name", "Sample Candidate") in values
-        assert ("links.linkedin", "https://linkedin.com/in/sample-candidate") in values
-        assert ("links.github", "https://github.com/sample-candidate") in values
-        assert ("links.portfolio", "https://sample-candidate.github.io/portfolio/") in values
+        assert ("links.other", "linkedin.com/in/sample-candidate") in values
+        assert ("links.other", "github.com/sample-candidate") in values
+        assert ("links.other", "sample-candidate.github.io/portfolio") in values
         assert ("location.city", "Pune") in values
         assert ("location.country", "IN") in values
         assert phones == ["+91 9876543210"]
         assert not any(phone == "11099802" for phone in phones)
         assert not any(value == "B.Tech" for _, value in values)
         assert any(item["institution"].startswith("Example Institute") for item in education)
+
+    def test_resume_body_github_goes_to_other_not_canonical(self):
+        text = """
+        Jane Doe
+        jane@example.com | github.com/realuser | linkedin.com/in/jane-doe
+
+        Summary
+        Built a project using https://github.com/some-library for parsing.
+        """
+
+        rfvs = ResumeExtractor()._parse_text(text, "resume.pdf")
+        github_values = [r.value for r in rfvs if r.field == "links.github"]
+        other_values = [r.value for r in rfvs if r.field == "links.other"]
+
+        assert github_values == ["github.com/realuser"]
+        assert "github.com/some-library" in other_values
+        assert "github.com/some-library" not in github_values
+
+    def test_resume_duplicate_github_formats_collapse_in_contact_block(self):
+        text = """
+        Jane Doe
+        github.com/realuser | https://www.github.com/realuser | https://github.com/realuser/
+        jane@example.com
+        """
+
+        rfvs = ResumeExtractor()._parse_text(text, "resume.pdf")
+        github_values = [r.value for r in rfvs if r.field == "links.github"]
+
+        assert github_values == ["github.com/realuser"]
+
+    def test_real_umesh_resume_scopes_github_links(self):
+        resume_path = Path("sources/resumes/Umesh_Gupta_Pedamallu_Resume.pdf")
+        rfvs = ResumeExtractor().extract(resume_path)
+        github_values = [r.value for r in rfvs if r.field == "links.github"]
+        other_values = [r.value for r in rfvs if r.field == "links.other"]
+
+        assert github_values == ["github.com/umeshgupta05"]
+        assert "github.com/dipy" in other_values
+        assert "github.com/umeshgupta05" not in other_values
 
     def test_github_readme_portfolio_keeps_single_best_url(self):
         text = """

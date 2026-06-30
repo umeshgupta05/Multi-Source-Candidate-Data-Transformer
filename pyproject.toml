@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "candidate-transformer"
+version = "1.0.0"
+description = "Multi-Source Candidate Data Transformer — Eightfold Engineering Intern Assignment"
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.0,<3.0",
+    "phonenumbers>=8.13",
+    "pycountry>=23.12",
+    "rapidfuzz>=3.0",
+    "pdfplumber>=0.10",
+    "python-docx>=1.0",
+    "requests>=2.31",
+    "fastapi>=0.110",
+    "uvicorn>=0.27",
+    "python-multipart>=0.0.9",
+    "fpdf2>=2.7",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+]
+llm = [
+    "openai>=1.40",
+    "PyMuPDF>=1.24",
+]
+
+[project.scripts]
+candidate-transformer = "candidate_transformer.app:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

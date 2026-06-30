@@ -1,0 +1,8 @@
+{
+  "fields": [
+    { "path": "name", "from": "full_name", "type": "string" },
+    { "path": "skills", "from": "skills[].name", "type": "string[]", "normalize": "canonical" }
+  ],
+  "include_confidence": false,
+  "on_missing": "omit"
+}

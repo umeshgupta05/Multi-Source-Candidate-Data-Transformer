@@ -1,0 +1,7 @@
+name,email,phone,current_company,title
+Jane Doe,jane.doe@example.com,+1-202-555-0147,Acme Corp,Senior Software Engineer
+John Smith,john.smith@techco.io,+1-212-555-0198,TechCo Inc,Data Scientist
+Emily Chen,emily.chen@startup.dev,+1-512-555-0134,InnovateLabs,Full Stack Developer
+,missing_name@example.com,+44 7911 123456,GlobalTech,DevOps Engineer
+Bob Wilson,bob.wilson@example.com,,Acme Corp,Backend Developer
+Alice Johnson,invalid-email-format,+1-650-555-0189,TechCo Inc,ML Engineer

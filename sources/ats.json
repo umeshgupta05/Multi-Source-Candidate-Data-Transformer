@@ -1,0 +1,102 @@
+{
+  "applicants": [
+    {
+      "applicant_name": "Jane Doe",
+      "contact_email": "jane.doe@example.com",
+      "contact_phone": "+12025550147",
+      "current_employer": "Acme Corp",
+      "job_title": "Sr. Software Engineer",
+      "applied_role": "Staff Engineer",
+      "location_city": "San Francisco",
+      "location_state": "CA",
+      "location_country": "United States",
+      "skills_list": ["Python", "Go", "Kubernetes", "AWS", "PostgreSQL"],
+      "years_of_experience": 8,
+      "education": [
+        {
+          "school": "Stanford University",
+          "degree_type": "M.S.",
+          "major": "Computer Science",
+          "graduation_year": 2016
+        }
+      ],
+      "work_history": [
+        {
+          "employer": "Acme Corp",
+          "role": "Senior Software Engineer",
+          "start_date": "2020-03",
+          "end_date": null
+        },
+        {
+          "employer": "PreviousCo",
+          "role": "Software Engineer",
+          "start_date": "2016-06",
+          "end_date": "2020-02"
+        }
+      ]
+    },
+    {
+      "applicant_name": "John Smith",
+      "contact_email": "john.smith@techco.io",
+      "contact_phone": "+12125550198",
+      "current_employer": "TechCo Inc",
+      "job_title": "Senior Data Scientist",
+      "applied_role": "Lead Data Scientist",
+      "location_city": "New York",
+      "location_state": "NY",
+      "location_country": "USA",
+      "skills_list": ["Python", "TensorFlow", "PyTorch", "SQL", "Spark"],
+      "years_of_experience": 6,
+      "education": [
+        {
+          "school": "MIT",
+          "degree_type": "Ph.D.",
+          "major": "Machine Learning",
+          "graduation_year": 2018
+        }
+      ],
+      "work_history": [
+        {
+          "employer": "TechCo Inc",
+          "role": "Data Scientist",
+          "start_date": "March 2019",
+          "end_date": "Present"
+        },
+        {
+          "employer": "DataStartup",
+          "role": "Junior Data Scientist",
+          "start_date": "2018",
+          "end_date": "02/2019"
+        }
+      ]
+    },
+    {
+      "applicant_name": "Emily Chen",
+      "contact_email": "emily.chen@startup.dev",
+      "contact_phone": "+15125550134",
+      "current_employer": "InnovateLabs",
+      "job_title": "Full-Stack Developer",
+      "applied_role": "Senior Developer",
+      "location_city": "Austin",
+      "location_state": "TX",
+      "location_country": "US",
+      "skills_list": ["JavaScript", "React", "Node.js", "TypeScript", "MongoDB"],
+      "education": [
+        {
+          "school": "UT Austin",
+          "degree_type": "B.S.",
+          "major": "Computer Science",
+          "graduation_year": 2020
+        }
+      ],
+      "work_history": [
+        {
+          "employer": "InnovateLabs",
+          "role": "Full Stack Developer",
+          "start_date": "2021-01",
+          "end_date": null
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,381 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Data Transformer - Eightfold</title>
+    <meta name="description" content="Multi-Source Candidate Data Transformer: ingest, normalize, merge, and project candidate profiles from multiple sources with provenance-tracked confidence scoring.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <!-- Animated background -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="header-inner">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                        <path d="M14 2L26 8V20L14 26L2 20V8L14 2Z" stroke="url(#logoGrad)" stroke-width="2" fill="none"/>
+                        <path d="M14 10L20 13V19L14 22L8 19V13L14 10Z" fill="url(#logoGrad)" opacity="0.6"/>
+                        <defs><linearGradient id="logoGrad" x1="2" y1="2" x2="26" y2="26"><stop stop-color="#818cf8"/><stop offset="1" stop-color="#c084fc"/></linearGradient></defs>
+                    </svg>
+                </div>
+                <span class="logo-text">Candidate Transformer</span>
+            </div>
+            <nav class="nav-pills">
+                <button class="nav-pill active" data-section="pipeline" id="nav-pipeline">Pipeline</button>
+                <button class="nav-pill" data-section="results" id="nav-results">Results</button>
+                <button class="nav-pill" data-section="config" id="nav-config">Config</button>
+            </nav>
+            <div class="header-badge">
+                <span class="badge-dot"></span>
+                <span>Eightfold Assignment</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+
+        <!-- ==================== PIPELINE SECTION ==================== -->
+        <section class="section active" id="section-pipeline">
+            <!-- Hero -->
+            <div class="hero" id="hero">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        <span class="hero-title-line">Multi-Source</span>
+                        <span class="hero-title-line gradient-text">Candidate Data</span>
+                        <span class="hero-title-line">Transformer</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        Ingest candidate data from CSV, ATS JSON, GitHub profiles, and resumes.
+                        Normalize, resolve entities, merge with confidence scoring, and project
+                        through configurable output schemas - all with full provenance.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Pipeline Stages Visualization -->
+            <div class="pipeline-viz" id="pipeline-viz">
+                <div class="pipeline-stage" data-stage="1">
+                    <div class="stage-icon" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v10"></path><path d="m8 9 4 4 4-4"></path><path d="M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"></path></svg>
+                    </div>
+                    <div class="stage-label">Extract</div>
+                </div>
+                <div class="pipeline-arrow" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></div>
+                <div class="pipeline-stage" data-stage="2">
+                    <div class="stage-icon" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M7 12h10"></path><path d="M10 18h4"></path></svg>
+                    </div>
+                    <div class="stage-label">Normalize</div>
+                </div>
+                <div class="pipeline-arrow" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></div>
+                <div class="pipeline-stage" data-stage="3">
+                    <div class="stage-icon" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.2 1.2"></path><path d="M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20.1l1.2-1.2"></path></svg>
+                    </div>
+                    <div class="stage-label">Resolve</div>
+                </div>
+                <div class="pipeline-arrow" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></div>
+                <div class="pipeline-stage" data-stage="4">
+                    <div class="stage-icon" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7h8"></path><path d="M8 12h8"></path><path d="M8 17h8"></path><path d="M4 7h.01"></path><path d="M4 12h.01"></path><path d="M4 17h.01"></path><path d="M20 7h.01"></path><path d="M20 12h.01"></path><path d="M20 17h.01"></path></svg>
+                    </div>
+                    <div class="stage-label">Merge</div>
+                </div>
+                <div class="pipeline-arrow" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></div>
+                <div class="pipeline-stage" data-stage="5">
+                    <div class="stage-icon" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5"></path><path d="M4 19h16"></path><path d="M8 16v-4"></path><path d="M12 16V8"></path><path d="M16 16v-6"></path></svg>
+                    </div>
+                    <div class="stage-label">Score</div>
+                </div>
+                <div class="pipeline-arrow" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></div>
+                <div class="pipeline-stage" data-stage="6">
+                    <div class="stage-icon" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"></path><path d="M4 12h10"></path><path d="M4 18h7"></path><path d="m15 17 2 2 4-5"></path></svg>
+                    </div>
+                    <div class="stage-label">Project</div>
+                </div>
+                <div class="pipeline-arrow" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></div>
+                <div class="pipeline-stage" data-stage="7">
+                    <div class="stage-icon" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+                    </div>
+                    <div class="stage-label">Validate</div>
+                </div>
+            </div>
+
+            <!-- Source Selection -->
+            <div class="card glass-card" id="source-card">
+                <div class="card-header">
+                    <h2 class="card-title">Source Data</h2>
+                    <div class="toggle-group">
+                        <button class="toggle-btn active" id="btn-sample" onclick="setSourceMode('sample')">
+                            Use Sample Data
+                        </button>
+                        <button class="toggle-btn" id="btn-upload" onclick="setSourceMode('upload')">
+                            Upload Files
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sample Data View -->
+                <div class="source-mode" id="mode-sample">
+                    <div class="sample-sources">
+                        <div class="source-chip" data-source="csv">
+                            <span class="chip-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M8 13h8"></path><path d="M8 17h5"></path></svg></span>
+                            <span class="chip-label">Recruiter CSV</span>
+                            <span class="chip-badge">6 rows</span>
+                        </div>
+                        <div class="source-chip" data-source="ats">
+                            <span class="chip-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"></ellipse><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"></path><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"></path></svg></span>
+                            <span class="chip-label">ATS JSON</span>
+                            <span class="chip-badge">3 applicants</span>
+                        </div>
+                        <div class="source-chip" data-source="github">
+                            <span class="chip-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"></circle><circle cx="18" cy="18" r="3"></circle><path d="M8.6 7.4 15.4 14.6"></path><path d="M12 6h3a3 3 0 0 1 3 3v6"></path></svg></span>
+                            <span class="chip-label">GitHub Profiles</span>
+                            <span class="chip-badge">2 users</span>
+                        </div>
+                        <div class="source-chip" data-source="resume">
+                            <span class="chip-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"></path><path d="M15 2v5h5"></path><path d="M9 13h6"></path><path d="M9 17h4"></path></svg></span>
+                            <span class="chip-label">Resume PDF</span>
+                            <span class="chip-badge">1 file</span>
+                        </div>
+                    </div>
+                    <p class="source-note">
+                        Sample data includes deliberate conflicts, missing fields, and edge cases for demonstration.
+                    </p>
+                </div>
+
+                <!-- Upload View -->
+                <div class="source-mode hidden" id="mode-upload">
+                    <div class="upload-grid">
+                        <div class="upload-zone" id="drop-csv">
+                            <input type="file" id="file-csv" accept=".csv" hidden>
+                            <div class="upload-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M8 13h8"></path><path d="M8 17h5"></path></svg></div>
+                            <div class="upload-label">Recruiter CSV</div>
+                            <div class="upload-hint">Drop .csv file here</div>
+                            <div class="upload-filename" id="fname-csv"></div>
+                        </div>
+                        <div class="upload-zone" id="drop-ats">
+                            <input type="file" id="file-ats" accept=".json" hidden>
+                            <div class="upload-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"></ellipse><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"></path><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"></path></svg></div>
+                            <div class="upload-label">ATS JSON</div>
+                            <div class="upload-hint">Drop .json file here</div>
+                            <div class="upload-filename" id="fname-ats"></div>
+                        </div>
+                        <div class="upload-zone" id="drop-github">
+                            <input type="file" id="file-github" accept=".txt" hidden>
+                            <div class="upload-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"></circle><circle cx="18" cy="18" r="3"></circle><path d="M8.6 7.4 15.4 14.6"></path><path d="M12 6h3a3 3 0 0 1 3 3v6"></path></svg></div>
+                            <div class="upload-label">GitHub URLs</div>
+                            <div class="upload-hint">Drop .txt file here</div>
+                            <div class="upload-filename" id="fname-github"></div>
+                        </div>
+                        <div class="upload-zone" id="drop-resume">
+                            <input type="file" id="file-resume" accept=".pdf,.docx" multiple hidden>
+                            <div class="upload-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"></path><path d="M15 2v5h5"></path><path d="M9 13h6"></path><path d="M9 17h4"></path></svg></div>
+                            <div class="upload-label">Resumes</div>
+                            <div class="upload-hint">Drop PDF / DOCX</div>
+                            <div class="upload-filename" id="fname-resume"></div>
+                        </div>
+                    </div>
+                    <div class="upload-actions">
+                        <button type="button" class="btn-secondary" id="btn-clear-uploads">
+                            Clear Uploads
+                        </button>
+                    </div>
+                </div>
+
+                <div class="resume-method-row">
+                    <span class="resume-method-label">Resume Extraction</span>
+                    <div class="toggle-group">
+                        <button type="button" class="toggle-btn active" id="btn-resume-regex" data-resume-mode="regex">
+                            Regex
+                        </button>
+                        <button type="button" class="toggle-btn" id="btn-resume-llm" data-resume-mode="llm">
+                            LLM (Qwen)
+                        </button>
+                        <button type="button" class="toggle-btn" id="btn-resume-both" data-resume-mode="both">
+                            Both
+                        </button>
+                    </div>
+                </div>
+                <div class="resume-method-row">
+                    <span class="resume-method-label">GitHub README Parsing</span>
+                    <div class="toggle-group">
+                        <button type="button" class="toggle-btn active" id="btn-github-readme-regex" data-github-readme-mode="regex">
+                            Regex only
+                        </button>
+                        <button type="button" class="toggle-btn" id="btn-github-readme-llm" data-github-readme-mode="llm">
+                            Regex + LLM
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Config Selection -->
+            <div class="card glass-card" id="config-card">
+                <div class="card-header">
+                    <h2 class="card-title">Output Configuration</h2>
+                    <div class="toggle-group">
+                        <button class="toggle-btn active" id="btn-config-preset" onclick="setConfigMode('preset')">
+                            Choose Preset
+                        </button>
+                        <button class="toggle-btn" id="btn-config-upload" onclick="setConfigMode('upload')">
+                            Upload Custom Config
+                        </button>
+                    </div>
+                </div>
+                <div class="config-mode" id="mode-config-preset">
+                    <div class="config-selector" id="config-selector">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+                <div class="config-mode hidden" id="mode-config-upload">
+                    <div class="upload-zone config-upload-zone" id="drop-config">
+                        <input type="file" id="file-config" accept=".json,application/json" hidden>
+                        <div class="upload-icon">JSON</div>
+                        <div class="upload-label">Custom Projection Config</div>
+                        <div class="upload-hint">Drop .json file here</div>
+                        <div class="upload-filename" id="fname-config"></div>
+                        <div class="config-file-preview" id="config-file-preview"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Run Button -->
+            <div class="run-section">
+                <button class="btn-run" id="btn-run" onclick="runPipeline()">
+                    <span class="btn-run-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg></span>
+                    <span class="btn-run-text">Run Pipeline</span>
+                </button>
+            </div>
+
+            <!-- Loading Overlay -->
+            <div class="loading-overlay hidden" id="loading">
+                <div class="loading-card glass-card">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Processing pipeline...</div>
+                    <div class="loading-stages" id="loading-stages"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== RESULTS SECTION ==================== -->
+        <section class="section" id="section-results">
+            <div class="results-empty" id="results-empty">
+                <div class="empty-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg></div>
+                <h2>No Results Yet</h2>
+                <p>Run the pipeline to see transformed candidate data here.</p>
+                <button class="btn-secondary" onclick="switchSection('pipeline')">Go to Pipeline</button>
+            </div>
+
+            <div class="results-content hidden" id="results-content">
+                <!-- Run Summary -->
+                <div class="card glass-card" id="summary-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Run Summary</h2>
+                        <button class="btn-icon" onclick="downloadOutput()" title="Download JSON" id="btn-download">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path></svg>
+                        </button>
+                    </div>
+                    <div class="stats-grid" id="stats-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Conflicts & Rejections -->
+                <div class="card glass-card hidden" id="issues-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Conflicts & Rejections</h2>
+                    </div>
+                    <div id="issues-content"></div>
+                </div>
+
+                <!-- Candidate Cards -->
+                <div id="candidate-cards">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== CONFIG SECTION ==================== -->
+        <section class="section" id="section-config">
+            <div class="card glass-card">
+                <div class="card-header">
+                    <h2 class="card-title">Configuration Explorer</h2>
+                </div>
+                <div class="config-tabs" id="config-tabs">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="config-preview" id="config-preview">
+                    <pre><code id="config-json"></code></pre>
+                </div>
+            </div>
+
+            <!-- Architecture Info -->
+            <div class="card glass-card">
+                <div class="card-header">
+                    <h2 class="card-title">Architecture</h2>
+                </div>
+                <div class="arch-info">
+                    <div class="arch-block">
+                        <h3>Three Object Boundaries</h3>
+                        <div class="arch-objects">
+                            <div class="arch-obj">
+                                <div class="arch-obj-title">RawFieldValue</div>
+                                <div class="arch-obj-desc">One claim from one source about one field</div>
+                            </div>
+                            <div class="arch-arrow" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></div>
+                            <div class="arch-obj highlight">
+                                <div class="arch-obj-title">CanonicalRecord</div>
+                                <div class="arch-obj-desc">Full-fidelity merged truth - never reshaped</div>
+                            </div>
+                            <div class="arch-arrow" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></div>
+                            <div class="arch-obj">
+                                <div class="arch-obj-title">Projection</div>
+                                <div class="arch-obj-desc">Config-driven output view</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="arch-block">
+                        <h3>Design Principles</h3>
+                        <div class="principle-list">
+                            <div class="principle">
+                                <span class="principle-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="3"></circle></svg></span>
+                                <span>Wrong-but-confident is worse than honestly-empty</span>
+                            </div>
+                            <div class="principle">
+                                <span class="principle-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg></span>
+                                <span>Every field is traceable to a source and method</span>
+                            </div>
+                            <div class="principle">
+                                <span class="principle-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg></span>
+                                <span>Same inputs always produce the same output</span>
+                            </div>
+                            <div class="principle">
+                                <span class="principle-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"></path><path d="M5 7h14"></path><path d="m6 7-3 7h6z"></path><path d="m18 7-3 7h6z"></path></svg></span>
+                                <span>Under-merging over over-merging - duplicates are fixable, bad merges are silent</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
+

@@ -462,3 +462,44 @@ class TestResumeExtractor:
         assert ("location.city", "San Francisco") in values
         assert ("location.region", "CA") in values
         assert ("location.country", "US") in values
+
+    def test_resume_template_with_spaced_name_hidden_links_and_address(self):
+        text = """
+        S A M P L E
+        C A N D I D A T E
+        sample.candidate@example.com | +91 9876543210 | Door No.: 12-34/A, Central
+        Avenue 2nd Line, Example Colony, Pune, India | LinkedIn | GitHub | Portfolio
+        PROFILE
+        Aspiring AI researcher and published author.
+        EDUCATION
+        Example Institute of Technology, Pune
+        Bachelor of Technology in Computer Science and Engineering | CGPA: 8.08
+        Currently pursuing IV/IV B.Tech (2022 - Present).
+        Example Junior College, Pune Intermediate (MPC) | Score: 96%
+        Completed 2020 - 2022.
+        PUBLICATIONS & LITERARY PORTFOLIO
+        https://ieeexplore.ieee.org/document/11099802
+        SKILLS
+        Programming & Databases: Python, C, SQL (Integration with Excel).
+        AI & Machine Learning: TensorFlow, BERT, Transformers, Deep Learning, NLP and Computer Vision.
+        Microsoft Office Suite: Expert-level proficiency in Word, Excel, and PowerPoint.
+        https://linkedin.com/in/sample-candidate
+        https://github.com/sample-candidate
+        https://sample-candidate.github.io/portfolio/
+        """
+
+        rfvs = ResumeExtractor()._parse_text(text, "resume.pdf")
+        values = {(r.field, r.value) for r in rfvs if isinstance(r.value, str)}
+        phones = [r.value for r in rfvs if r.field == "phones"]
+        education = [r.value for r in rfvs if r.field == "education"]
+
+        assert ("full_name", "Sample Candidate") in values
+        assert ("links.linkedin", "https://linkedin.com/in/sample-candidate") in values
+        assert ("links.github", "https://github.com/sample-candidate") in values
+        assert ("links.portfolio", "https://sample-candidate.github.io/portfolio/") in values
+        assert ("location.city", "Pune") in values
+        assert ("location.country", "IN") in values
+        assert phones == ["+91 9876543210"]
+        assert not any(phone == "11099802" for phone in phones)
+        assert not any(value == "B.Tech" for _, value in values)
+        assert any(item["institution"].startswith("Example Institute") for item in education)

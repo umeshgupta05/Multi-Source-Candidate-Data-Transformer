@@ -57,8 +57,10 @@ _SECTION_PATTERNS = {
     "summary": re.compile(r"^\s*(?:summary|profile|objective|about|professional\s+summary)\s*$", re.I),
     "contact": re.compile(r"^\s*contact(?:\s+info(?:rmation)?)?\s*$", re.I),
     "projects": re.compile(r"^\s*(?:technical\s+)?projects?\s*$", re.I),
+    "publications": re.compile(r"^\s*(?:publications?|research|literary\s+portfolio)(?:\s*&\s*.*)?\s*$", re.I),
     "achievements": re.compile(r"^\s*(?:achievements?|awards?|recognition|certifications?)\s*(?:&\s*recognition)?\s*$", re.I),
     "leadership": re.compile(r"^\s*(?:leadership|community|volunteering)(?:\s*&\s*community)?\s*$", re.I),
+    "certifications": re.compile(r"^\s*(?:certifications?|licenses?|courses?)\s*$", re.I),
 }
 
 # Date pattern for experience entries.
@@ -92,6 +94,19 @@ _JOINED_WORD_SPLITS = [
     "allowing", "retailers", "search", "produce", "place", "modify", "orders",
     "complete", "transactions", "submit", "feedback",
 ]
+_KNOWN_SKILL_TERMS = [
+    "Python", "Java", "JavaScript", "TypeScript", "C", "C++", "C#", "SQL",
+    "React", "Redux", "Node.js", "Express", "FastAPI", "Django", "Flask",
+    "TensorFlow", "PyTorch", "BERT", "Transformers", "Deep Learning",
+    "Machine Learning", "NLP", "Computer Vision", "AWS", "Azure", "GCP",
+    "Docker", "Kubernetes", "Git", "GitHub", "Linux", "Windows",
+    "Microsoft Word", "Word", "Excel", "PowerPoint", "Macros",
+    "Pivot Tables", "Project Management", "Team Collaboration",
+    "Multitasking", "Leadership", "Technical Documentation",
+    "Report Writing",
+]
+_DEGREE_DOMAIN_RE = re.compile(r"^(?:B|M|BSc|MSc|PhD|B\.?Tech|M\.?Tech)\.?(?:Tech|Sc|A|S|E)?$", re.I)
+_URL_SKIP_DOMAINS = ("ieeexplore.ieee.org", "leetcode.com", "codechef.com", "hackerrank.com")
 
 
 class ResumeExtractor(BaseExtractor):
@@ -142,11 +157,18 @@ class ResumeExtractor(BaseExtractor):
         import pdfplumber
 
         pages: list[str] = []
+        links: list[str] = []
         with pdfplumber.open(path) as pdf:
             for page in pdf.pages:
                 text = page.extract_text()
                 if text:
                     pages.append(text)
+                for link in getattr(page, "hyperlinks", []) or []:
+                    uri = (link.get("uri") or "").strip()
+                    if uri and uri not in links:
+                        links.append(uri)
+        if links:
+            pages.append("\n".join(links))
         return "\n".join(pages)
 
     def _read_docx(self, path: Path) -> str:
@@ -163,13 +185,13 @@ class ResumeExtractor(BaseExtractor):
         lines = [line.strip() for line in text.split("\n") if line.strip()]
 
         # --- Contact info via regex (whole document) ---
-        emails = _EMAIL_RE.findall(text)
-        phones = _PHONE_RE.findall(text)
-        linkedin_matches = _LINKEDIN_RE.findall(text)
-        github_matches = _GITHUB_RE.findall(text)
+        emails = list(dict.fromkeys(email.strip() for email in _EMAIL_RE.findall(text)))
+        phone_matches = list(_PHONE_RE.finditer(text))
+        linkedin_matches = list(dict.fromkeys(url.strip() for url in _LINKEDIN_RE.findall(text)))
+        github_matches = list(dict.fromkeys(url.strip().rstrip("/") for url in _GITHUB_RE.findall(text)))
 
         # Candidate key: first email found, or first line (likely the name).
-        first_email = emails[0].strip().lower() if emails else None
+        first_email = emails[0].lower() if emails else None
         first_line_name = self._infer_name(lines)
         candidate_key = first_email or (first_line_name or "unknown").lower()
 
@@ -188,15 +210,15 @@ class ResumeExtractor(BaseExtractor):
             rfvs.append(self._make_rfv(
                 candidate_key=candidate_key,
                 field="emails",
-                value=email.strip(),
+                value=email,
                 source=self.source_name,
                 method="regex_extract",
                 confidence=_CONF_REGEX,
             ))
 
-        for phone in phones:
-            cleaned = phone.strip()
-            if len(re.sub(r"\D", "", cleaned)) >= 7:  # At least 7 digits.
+        for phone_match in phone_matches:
+            cleaned = phone_match.group(0).strip()
+            if self._is_likely_phone_match(text, phone_match):
                 rfvs.append(self._make_rfv(
                     candidate_key=candidate_key,
                     field="phones",
@@ -210,7 +232,7 @@ class ResumeExtractor(BaseExtractor):
             rfvs.append(self._make_rfv(
                 candidate_key=candidate_key,
                 field="links.linkedin",
-                value=url.strip(),
+                value=url,
                 source=self.source_name,
                 method="regex_extract",
                 confidence=_CONF_REGEX,
@@ -220,7 +242,7 @@ class ResumeExtractor(BaseExtractor):
             rfvs.append(self._make_rfv(
                 candidate_key=candidate_key,
                 field="links.github",
-                value=url.strip(),
+                value=url,
                 source=self.source_name,
                 method="regex_extract",
                 confidence=_CONF_REGEX,
@@ -592,6 +614,83 @@ class ResumeExtractor(BaseExtractor):
                 seen[key] = entry
         return list(seen.values())
 
+    def _parse_skills_section(self, lines: list[str]) -> list[str]:
+        """Parse skills conservatively from category-heavy ATS sections."""
+        skills: list[str] = []
+        for line in lines:
+            line = self._clean_line(line)
+            if not line:
+                continue
+
+            known = self._known_skills_in_text(line)
+            for skill in known:
+                skills.append(skill)
+
+            if ":" in line and not known:
+                _, values = line.split(":", 1)
+                for part in re.split(r"[,;|]|\band\b", values):
+                    skill = self._clean_skill(part)
+                    if skill and skill.lower() not in {"expert-level proficiency", "foundational"}:
+                        skills.append(skill)
+        return list(dict.fromkeys(skills))
+
+    def _parse_education_section(self, lines: list[str]) -> list[dict]:
+        """Parse common ATS education layouts with nearby institution/date context."""
+        entries: list[dict] = []
+        degree_re = re.compile(
+            r"\b(Bachelor(?:'s)?(?:\s+of\s+\w+)?|Master(?:'s)?(?:\s+of\s+\w+)?|Doctor(?:ate)?|Ph\.?D\.?|M\.?Tech|B\.?Tech|B\.?E\.?|M\.?S\.?|B\.?S\.?|M\.?A\.?|B\.?A\.?|MBA|Intermediate|10th\s+Standard|High\s+School)\b",
+            re.I,
+        )
+
+        for i, raw_line in enumerate(lines):
+            line = self._clean_line(raw_line)
+            if not line or re.match(r"^(?:Completed|Currently)\b", line, re.I):
+                continue
+
+            degree_match = degree_re.search(line)
+            if not degree_match:
+                continue
+
+            context = " ".join(self._clean_line(l) for l in lines[i:i + 2])
+            years = [int(y) for y in re.findall(r"\b(?:19|20)\d{2}\b", context)]
+            end_year = None if re.search(r"\b(?:Present|Current|Currently)\b", context, re.I) else (max(years) if years else None)
+            degree = degree_match.group(0)
+            before = line[:degree_match.start()].strip(" ,-|")
+            after = line[degree_match.end():]
+
+            if before and len(before.split()) >= 2:
+                institution = before
+            else:
+                institution = ""
+                for prev in reversed(lines[max(0, i - 2):i]):
+                    prev_line = self._clean_line(prev)
+                    if (
+                        prev_line
+                        and not degree_re.search(prev_line)
+                        and not re.search(r"\b(?:CGPA|GPA|Score|Completed|Currently)\b", prev_line, re.I)
+                    ):
+                        institution = prev_line
+                        break
+
+            field = re.split(r"\||CGPA|GPA|Score|Completed|Currently", after, maxsplit=1, flags=re.I)[0]
+            field = re.sub(r"\b(?:19|20)\d{2}\b", "", field)
+            field = re.sub(r"\s*(?:-|–|—|\bto\b)\s*", " ", field).strip(" ,.-–—()")
+            field = re.sub(r"^(?:in|of)\s+", "", field, flags=re.I)
+
+            entries.append({
+                "institution": institution or line,
+                "degree": degree,
+                "field": field or None,
+                "end_year": end_year,
+            })
+
+        seen: dict[str, dict] = {}
+        for entry in entries:
+            key = entry["institution"].lower()
+            if key and key not in seen:
+                seen[key] = entry
+        return list(seen.values())
+
     @staticmethod
     def _normalize_text(text: str) -> str:
         text = text.replace("\r\n", "\n").replace("\r", "\n")
@@ -660,6 +759,16 @@ class ResumeExtractor(BaseExtractor):
 
     @staticmethod
     def _infer_name(lines: list[str]) -> str | None:
+        spaced_name: list[str] = []
+        for line in lines[:4]:
+            collapsed = ResumeExtractor._collapse_letter_spaced_name(line)
+            if collapsed:
+                spaced_name.append(collapsed)
+                continue
+            break
+        if spaced_name:
+            return " ".join(spaced_name).title()
+
         for line in lines[:8]:
             cleaned = ResumeExtractor._clean_line(line)
             if not cleaned or _EMAIL_RE.search(cleaned) or _PHONE_RE.search(cleaned) or _URL_RE.search(cleaned):
@@ -671,6 +780,16 @@ class ResumeExtractor(BaseExtractor):
         return None
 
     @staticmethod
+    def _collapse_letter_spaced_name(line: str) -> str | None:
+        cleaned = ResumeExtractor._clean_line(line)
+        tokens = cleaned.split()
+        if len(tokens) < 3:
+            return None
+        if all(len(token) == 1 and token.isalpha() and token.isupper() for token in tokens):
+            return "".join(tokens)
+        return None
+
+    @staticmethod
     def _extract_portfolio_urls(
         text: str,
         linkedin_matches: list[str],
@@ -679,19 +798,24 @@ class ResumeExtractor(BaseExtractor):
         excluded = {u.lower().rstrip("/") for u in linkedin_matches + github_matches}
         seen: set[str] = set()
         urls: list[str] = []
-        scan_text = "\n".join(text.splitlines()[:25])
+        scan_text = text
         for raw in _URL_RE.findall(scan_text):
             url = raw.strip().rstrip(").,;")
             lowered = url.lower().rstrip("/")
+            domain = lowered.split("/", 1)[0]
             if lowered[0].isdigit():
                 continue
             if lowered in excluded:
+                continue
+            if _DEGREE_DOMAIN_RE.fullmatch(url.strip()):
                 continue
             if re.fullmatch(r"\d+(?:\.\d+)+", lowered):
                 continue
             if lowered in {"react.js", "node.js", "vue.js", "next.js", "express.js"}:
                 continue
-            if any(domain in lowered for domain in ("leetcode.com", "codechef.com", "hackerrank.com")):
+            if any(skip_domain in lowered for skip_domain in _URL_SKIP_DOMAINS):
+                continue
+            if domain in {"b.tech", "m.tech"}:
                 continue
             if lowered not in seen:
                 seen.add(lowered)
@@ -699,9 +823,27 @@ class ResumeExtractor(BaseExtractor):
         return urls[:3]
 
     @staticmethod
+    def _is_likely_phone_match(text: str, match: re.Match) -> bool:
+        raw = match.group(0).strip()
+        digits = re.sub(r"\D", "", raw)
+        if len(digits) < 10 and not raw.startswith("+"):
+            return False
+
+        line_start = text.rfind("\n", 0, match.start()) + 1
+        line_end = text.find("\n", match.end())
+        if line_end == -1:
+            line_end = len(text)
+        line = text[line_start:line_end].lower()
+        if any(marker in line for marker in ("http://", "https://", "doi", "document/", "ieee")):
+            return False
+        return True
+
+    @staticmethod
     def _extract_location(lines: list[str]):
-        for line in lines[:12]:
+        for idx, line in enumerate(lines[:12]):
             if _EMAIL_RE.search(line) or _PHONE_RE.search(line) or _URL_RE.search(line):
+                candidates = ResumeExtractor._contact_location_candidates(line)
+            elif idx < 5 and "," in line:
                 candidates = ResumeExtractor._contact_location_candidates(line)
             elif re.search(r"\b(?:location|based\s+in|current\s+location|address)\b", line, re.I):
                 candidates = [line]
@@ -727,9 +869,23 @@ class ResumeExtractor(BaseExtractor):
         return candidates
 
     @staticmethod
+    def _known_skills_in_text(text: str) -> list[str]:
+        found: list[str] = []
+        lowered = text.lower()
+        for skill in _KNOWN_SKILL_TERMS:
+            pattern = r"(?<![a-z0-9.+#-])" + re.escape(skill.lower()) + r"(?![a-z0-9.+#-])"
+            if re.search(pattern, lowered) and skill not in found:
+                found.append(skill)
+        if "nlp and" in lowered and "NLP" not in found:
+            found.append("NLP")
+        return found
+
+    @staticmethod
     def _clean_skill(raw: str) -> str | None:
         skill = _BULLET_PREFIX_RE.sub("", raw).strip().strip("-–—·•. ")
         if not skill or not (1 < len(skill) < 45):
+            return None
+        if skill.lower() in {"and", "or", "technical proficiencies", "core administrative competencies"}:
             return None
         if _NOISE_SKILL_RE.search(skill):
             return None

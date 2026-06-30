@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-from candidate_transformer.normalizers.country import normalize_country
+import pycountry
 
 
 _US_STATE_CODES = {
@@ -36,8 +36,23 @@ _NON_LOCATION_TERMS = {
     "remote", "hybrid", "onsite", "on-site", "worldwide", "earth", "global",
     "open to relocate", "willing to relocate",
 }
+_COUNTRY_ALIASES = {
+    "usa": "US",
+    "u.s.a.": "US",
+    "u.s.": "US",
+    "united states": "US",
+    "united states of america": "US",
+    "uk": "GB",
+    "u.k.": "GB",
+    "united kingdom": "GB",
+    "great britain": "GB",
+    "england": "GB",
+    "scotland": "GB",
+    "wales": "GB",
+}
 _LABEL_RE = re.compile(r"^\s*(?:location|based\s+in|current\s+location|address)\s*:\s*", re.I)
-_BAD_CHARS_RE = re.compile(r"[@/]|\b(?:github|linkedin|portfolio|http|www)\b", re.I)
+_BAD_CHARS_RE = re.compile(r"@|\b(?:github|linkedin|portfolio|https?|www)\b", re.I)
+_ADDRESS_NOISE_RE = re.compile(r"\b(?:door|flat|house|plot|no\.?|street|line|colony|road|rd\.?)\b", re.I)
 
 
 @dataclass(frozen=True)
@@ -68,18 +83,27 @@ def parse_location_text(raw: str | None) -> ParsedLocation | None:
 
     comma_parts = _parts(text)
     if len(comma_parts) >= 3:
-        city, region, country_text = comma_parts[0], comma_parts[1], comma_parts[-1]
-        country = normalize_country(country_text)
+        country_text = comma_parts[-1]
+        country = _strict_country(country_text)
         if country:
+            if len(comma_parts) > 3 or _ADDRESS_NOISE_RE.search(text):
+                city = comma_parts[-2]
+                region = None
+            else:
+                city, region = comma_parts[0], comma_parts[1]
+            if not _valid_place_name(city):
+                return None
             return ParsedLocation(city=city, region=_normalize_region(region, country), country=country)
 
     if len(comma_parts) == 2:
         city, second = comma_parts
+        if not _valid_place_name(city):
+            return None
         state = _normalize_us_state(second)
         if state:
             return ParsedLocation(city=city, region=state, country="US")
 
-        country = normalize_country(second)
+        country = _strict_country(second)
         if country:
             return ParsedLocation(city=city, country=country)
 
@@ -90,6 +114,11 @@ def parse_location_text(raw: str | None) -> ParsedLocation | None:
         return ParsedLocation(city=city, region=region, country=country)
 
     return None
+
+
+def normalize_location_country(raw: str | None) -> str | None:
+    """Normalize an explicit country value without fuzzy guessing."""
+    return _strict_country(raw or "")
 
 
 def location_segments_from_line(line: str) -> list[str]:
@@ -123,7 +152,9 @@ def _normalize_us_state(raw: str) -> str | None:
     return _US_STATE_NAMES.get(text.lower())
 
 
-def _normalize_region(raw: str, country: str) -> str:
+def _normalize_region(raw: str | None, country: str) -> str | None:
+    if raw is None:
+        return None
     if country == "US":
         return _normalize_us_state(raw) or raw.strip()
     return raw.strip()
@@ -138,8 +169,45 @@ def _parse_space_separated(text: str) -> tuple[str | None, str | None, str | Non
 
     country_match = re.match(r"^(.+?)\s+([A-Za-z][A-Za-z .]{1,30})$", text)
     if country_match:
-        maybe_country = normalize_country(country_match.group(2).strip())
+        maybe_country = _strict_country(country_match.group(2).strip())
         if maybe_country:
-            return country_match.group(1).strip(), None, maybe_country
+            city = country_match.group(1).strip()
+            if _valid_place_name(city):
+                return city, None, maybe_country
 
     return None, None, None
+
+
+def _strict_country(raw: str) -> str | None:
+    text = raw.strip().strip(".")
+    if not text:
+        return None
+
+    lower = text.lower()
+    if lower in _COUNTRY_ALIASES:
+        return _COUNTRY_ALIASES[lower]
+
+    upper = text.upper()
+    if len(upper) == 2 and pycountry.countries.get(alpha_2=upper):
+        return upper
+    if len(upper) == 3:
+        country = pycountry.countries.get(alpha_3=upper)
+        if country:
+            return country.alpha_2
+
+    try:
+        country = pycountry.countries.lookup(text)
+        return country.alpha_2
+    except LookupError:
+        return None
+
+
+def _valid_place_name(value: str | None) -> bool:
+    if not value:
+        return False
+    text = value.strip()
+    if len(text) < 2 or any(ch.isdigit() for ch in text):
+        return False
+    if _BAD_CHARS_RE.search(text):
+        return False
+    return bool(re.search(r"[A-Za-z]", text))

@@ -18,12 +18,12 @@ from candidate_transformer.normalizers.name import normalize_name
 from candidate_transformer.normalizers.phone import normalize_phone
 from candidate_transformer.normalizers.skills import normalize_skill
 
+from ._location_parser import ParsedLocation, normalize_location_country, parse_location_text
 from .resume_extractor import ResumeExtractor
 
 logger = logging.getLogger(__name__)
 
 _ENV_LOADED = False
-
 RESUME_EXTRACTION_PROMPT = """Extract candidate information from the resume text below.
 
 Return ONLY one JSON object. Do not include prose or markdown fences.
@@ -32,6 +32,7 @@ Use this exact shape:
   "full_name": str | null,
   "emails": [str],
   "phones": [str],
+  "location": {"city": str|null, "region": str|null, "country": str|null},
   "links": {"linkedin": str|null, "github": str|null, "portfolio": str|null},
   "headline": str | null,
   "skills": [str],
@@ -45,6 +46,36 @@ Do NOT group skills by category. For example, instead of
 
 If a value is not explicitly present in the resume, use null or [].
 Do not guess.
+
+LOCATION RULES - follow exactly:
+- "city" means locality/town/city only, for example Pune, Bengaluru, London,
+  San Francisco.
+- "region" means state/province/administrative subdivision only, for example
+  CA, NY, Texas, Karnataka. If no state/province is explicitly present, set
+  region to null.
+- "country" means country only, returned as ISO-3166 alpha-2 code, for example
+  IN for India, US for United States, GB for United Kingdom.
+- Never default country to US. Use US only when the resume explicitly says
+  United States, USA, US, or gives a clear US state such as CA/NY/TX together
+  with a US city.
+- Never put country codes in region. IN, US, GB, CA, AU, DE, FR, SG are
+  country codes when they refer to countries. For Indian locations, IN is
+  always country, never region.
+- For Indian addresses like "Pune, India" or street address ending in
+  "Pune, India", return city Pune, region null, country IN.
+
+Location examples:
+- "Pune, India" -> {"city": "Pune", "region": null, "country": "IN"}
+- "Door No.: 12-34/A, Central Avenue 2nd Line, Example Colony, Pune, India" -> {"city": "Pune", "region": null, "country": "IN"}
+- "Bengaluru, Karnataka, India" -> {"city": "Bengaluru", "region": "Karnataka", "country": "IN"}
+- "San Francisco, CA" -> {"city": "San Francisco", "region": "CA", "country": "US"}
+- "Cambridge, MA, United States" -> {"city": "Cambridge", "region": "MA", "country": "US"}
+- "London, United Kingdom" -> {"city": "London", "region": null, "country": "GB"}
+
+Invalid location output examples:
+- Do NOT return {"city": "Pune", "region": "IN", "country": "US"}.
+- Do NOT return {"city": "Pune", "region": "IN", "country": null}.
+- Correct output is {"city": "Pune", "region": null, "country": "IN"}.
 
 Resume text:
 __RESUME_TEXT__
@@ -197,6 +228,7 @@ def qwen_json_to_rfvs(
     confidence: float,
     candidate_key_override: str | None = None,
     metadata: dict[str, Any] | None = None,
+    fallback_text: str | None = None,
 ) -> list[RawFieldValue]:
     rfvs: list[RawFieldValue] = []
     metadata = metadata or {}
@@ -224,6 +256,16 @@ def qwen_json_to_rfvs(
         rfvs.append(make("emails", email))
     for phone in phones:
         rfvs.append(make("phones", phone))
+
+    location = clean_location(data.get("location"), fallback_text=fallback_text)
+    if location:
+        for field, value in (
+            ("location.city", location.city),
+            ("location.region", location.region),
+            ("location.country", location.country),
+        ):
+            if value:
+                rfvs.append(make(field, value))
 
     links = data.get("links") or {}
     if isinstance(links, dict):
@@ -274,6 +316,93 @@ def clean_phones(value: Any) -> list[str]:
         if phone and phone not in phones:
             phones.append(phone)
     return phones
+
+
+def clean_location(value: Any, fallback_text: str | None = None) -> ParsedLocation | None:
+    fallback = location_from_resume_text(fallback_text)
+
+    if isinstance(value, str):
+        parsed = parse_location_text(value)
+        return reconcile_location(parsed, fallback, raw_value=value)
+
+    if not isinstance(value, dict):
+        return fallback
+
+    raw = clean_str(value.get("raw") or value.get("text") or value.get("full") or value.get("address"))
+    if raw:
+        parsed = parse_location_text(raw)
+        if parsed:
+            return reconcile_location(parsed, fallback, raw_value=raw)
+
+    city = clean_str(value.get("city"))
+    region = clean_str(value.get("region") or value.get("state") or value.get("province"))
+    country = normalize_location_country(clean_str(value.get("country")))
+
+    if country == "US" and fallback and fallback.country and fallback.country != "US":
+        return ParsedLocation(
+            city=fallback.city or city,
+            region=fallback.region,
+            country=fallback.country,
+        )
+
+    region_as_country = normalize_location_country(region)
+    if region_as_country and len(region or "") <= 3 and not country:
+        if not country or country != region_as_country:
+            country = region_as_country
+        region = None
+        if city or country:
+            return reconcile_location(
+                ParsedLocation(city=city, region=region, country=country),
+                fallback,
+                raw_value=json.dumps(value),
+            )
+
+    if not city and not region and not country:
+        return fallback
+
+    if city and country:
+        joined = ", ".join(part for part in (city, region, country) if part)
+        parsed = parse_location_text(joined)
+        if parsed:
+            return reconcile_location(parsed, fallback, raw_value=json.dumps(value))
+
+    return reconcile_location(
+        ParsedLocation(city=city, region=region, country=country),
+        fallback,
+        raw_value=json.dumps(value),
+    )
+
+
+def location_from_resume_text(text: str | None) -> ParsedLocation | None:
+    if not text or not text.strip():
+        return None
+    normalized = ResumeExtractor._normalize_text(text)
+    lines = [line.strip() for line in normalized.split("\n") if line.strip()]
+    return ResumeExtractor._extract_location(lines)
+
+
+def reconcile_location(
+    llm_location: ParsedLocation | None,
+    fallback_location: ParsedLocation | None,
+    *,
+    raw_value: str | None,
+) -> ParsedLocation | None:
+    if not llm_location:
+        return fallback_location
+    if not fallback_location:
+        return llm_location
+
+    if llm_location.country == "US" and fallback_location.country and fallback_location.country != "US":
+        raw = (raw_value or "").lower()
+        has_explicit_us = re.search(r"\b(?:united states|usa|u\.s\.a\.|u\.s\.|us)\b", raw)
+        if not has_explicit_us:
+            return ParsedLocation(
+                city=fallback_location.city or llm_location.city,
+                region=fallback_location.region,
+                country=fallback_location.country,
+            )
+
+    return llm_location
 
 
 def clean_skills(value: Any) -> list[str]:

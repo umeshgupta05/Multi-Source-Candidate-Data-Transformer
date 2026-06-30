@@ -1,0 +1,323 @@
+[
+  {
+    "full_name": "Umesh Gupta Pedamallu",
+    "primary_email": "saiumeshgupta@gmail.com",
+    "emails": [
+      "saiumeshgupta@gmail.com"
+    ],
+    "phone": "+916281784716",
+    "phones": [
+      "+916281784716"
+    ],
+    "location": {
+      "city": "Vijayawada",
+      "region": null,
+      "country": "IN"
+    },
+    "links": {
+      "linkedin": "linkedin.com/in/umesh-gupta",
+      "github": "github.com/umeshgupta05",
+      "portfolio": "umeshguptapedamallu.in",
+      "other": []
+    },
+    "headline": "Enthusiastic and detail-oriented Computer Science graduate with a strong interest in software development, cloud technologies, and problem-solving. Experienced in building full-stack applications, developing AI-powered tools, and working with databases. Passionate about learning new technologies, collaborating in team environments, and contributing to impactful projects through hands-on experience.",
+    "years_experience": 0.4,
+    "skills": [
+      "Java",
+      "Python",
+      "JavaScript",
+      "React",
+      "Redux",
+      "Tanstack",
+      "Node.js",
+      "Express",
+      "Springboot",
+      "REST APIs",
+      "Docker",
+      "Aws (Ec2",
+      "S3",
+      "Iam",
+      "Vpc",
+      "Cloudwatch)",
+      "MySQL",
+      "MongoDB",
+      "Machine Learning",
+      "Ai Assisted Coding (Github Copilot",
+      "Claude",
+      "Gemini)",
+      "Git",
+      "GitHub",
+      "Postman",
+      "Intellij Ide",
+      "Vs Code",
+      "Google Colab",
+      "Oop",
+      "Data Structures & Algorithms",
+      "Problem Solving",
+      "Agile/Scrum"
+    ],
+    "experience": [
+      {
+        "company": "Infosys Springboard",
+        "title": "Java Full Stack Virtual Intern",
+        "start": "2026-02",
+        "end": "2026-04",
+        "summary": "Engineered a two-role digital agriculture marketplace enabling farmers to manage product listings, pricing, inventory, and sales, while allowing retailers to search produce, place or modify orders, complete transactions, and submit feedback. Architected a four-service Spring Boot ecosystem using Config Server, Eureka, and API Gateway for centralized configuration, service discovery, and load-balanced routing. Developed five RESTful user-management APIs using Spring Boot, JPA/Hibernate, and MySQL with DTOs, validation, role-based access, and exception handling, while improving maintainability through externalized configuration."
+      },
+      {
+        "company": "SkillDzire Technologies Pvt. Ltd",
+        "title": "Web Developer & Cloud Integration Intern",
+        "start": "2025-11",
+        "end": "2026-03",
+        "summary": "Developed and deployed 3 full-stack applications, improving performance and responsiveness by 25%. Integrated cloud services (AWS/Cloud) for hosting, storage, and deployment, reducing manual effort by 40%. Designed 10 RESTful APIs with authentication and database integration, reducing data retrieval time by 30%. Improved scalability using modular architecture and clean code, reducing bug resolution time by 20%."
+      }
+    ],
+    "education": [
+      {
+        "institution": "Velagapudi Ramakrishna Siddhartha Engineering College, Vijayawada",
+        "degree": "Bachelor of Technology",
+        "field": "in Computer Science and Engineering",
+        "end_year": 2026
+      },
+      {
+        "institution": "Intermediate \u2013 Mathematics, Physics, Chemistry 2020 \u2013 2022",
+        "degree": "Intermediate",
+        "field": "Mathematics, Physics, Chemistry",
+        "end_year": 2022
+      }
+    ],
+    "overall_confidence": 0.68,
+    "provenance": [
+      {
+        "field": "full_name",
+        "source": "resume_pdf",
+        "method": "first_line_heuristic"
+      },
+      {
+        "field": "emails",
+        "source": "resume_pdf",
+        "method": "regex_extract"
+      },
+      {
+        "field": "phones",
+        "source": "resume_pdf",
+        "method": "regex_extract"
+      },
+      {
+        "field": "location.city",
+        "source": "resume_pdf",
+        "method": "contact_location_parse"
+      },
+      {
+        "field": "location.country",
+        "source": "resume_pdf",
+        "method": "contact_location_parse"
+      },
+      {
+        "field": "links.linkedin",
+        "source": "resume_pdf",
+        "method": "regex_extract"
+      },
+      {
+        "field": "links.github",
+        "source": "resume_pdf",
+        "method": "regex_extract"
+      },
+      {
+        "field": "links.portfolio",
+        "source": "resume_pdf",
+        "method": "regex_extract"
+      },
+      {
+        "field": "headline",
+        "source": "resume_pdf",
+        "method": "section_parse"
+      },
+      {
+        "field": "skills.Java",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.Python",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.JavaScript",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.React",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.Redux",
+        "source": "resume_pdf",
+        "method": "passthrough"
+      },
+      {
+        "field": "skills.Tanstack",
+        "source": "resume_pdf",
+        "method": "passthrough"
+      },
+      {
+        "field": "skills.Node.js",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.Express",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.Springboot",
+        "source": "resume_pdf",
+        "method": "passthrough"
+      },
+      {
+        "field": "skills.REST APIs",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.Docker",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.Aws (Ec2",
+        "source": "resume_pdf",
+        "method": "passthrough"
+      },
+      {
+        "field": "skills.S3",
+        "source": "resume_pdf",
+        "method": "passthrough"
+      },
+      {
+        "field": "skills.Iam",
+        "source": "resume_pdf",
+        "method": "passthrough"
+      },
+      {
+        "field": "skills.Vpc",
+        "source": "resume_pdf",
+        "method": "passthrough"
+      },
+      {
+        "field": "skills.Cloudwatch)",
+        "source": "resume_pdf",
+        "method": "passthrough"
+      },
+      {
+        "field": "skills.MySQL",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.MongoDB",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.Machine Learning",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.Ai Assisted Coding (Github Copilot",
+        "source": "resume_pdf",
+        "method": "passthrough"
+      },
+      {
+        "field": "skills.Claude",
+        "source": "resume_pdf",
+        "method": "passthrough"
+      },
+      {
+        "field": "skills.Gemini)",
+        "source": "resume_pdf",
+        "method": "passthrough"
+      },
+      {
+        "field": "skills.Git",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.GitHub",
+        "source": "resume_pdf",
+        "method": "taxonomy_match"
+      },
+      {
+        "field": "skills.Postman",
+        "source": "resume_pdf",
+        "method": "passthrough"
+      },
+      {
+        "field": "skills.Intellij Ide",
+        "source": "resume_pdf",
+        "method": "passthrough"
+      },
+      {
+        "field": "skills.Vs Code",
+        "source": "resume_pdf",
+        "method": "passthrough"
+      },
+      {
+        "field": "skills.Google Colab",
+        "source": "resume_pdf",
+        "method": "passthrough"
+      },
+      {
+        "field": "skills.Oop",
+        "source": "resume_pdf",
+        "method": "passthrough"
+      },
+      {
+        "field": "skills.Data Structures & Algorithms",
+        "source": "resume_pdf",
+        "method": "passthrough"
+      },
+      {
+        "field": "skills.Problem Solving",
+        "source": "resume_pdf",
+        "method": "passthrough"
+      },
+      {
+        "field": "skills.Agile/Scrum",
+        "source": "resume_pdf",
+        "method": "passthrough"
+      },
+      {
+        "field": "experience",
+        "source": "resume_pdf",
+        "method": "section_parse"
+      },
+      {
+        "field": "experience",
+        "source": "resume_pdf",
+        "method": "section_parse"
+      },
+      {
+        "field": "education",
+        "source": "resume_pdf",
+        "method": "section_parse"
+      },
+      {
+        "field": "education",
+        "source": "resume_pdf",
+        "method": "section_parse"
+      },
+      {
+        "field": "years_experience",
+        "source": "derived",
+        "method": "computed_from_experience_dates"
+      }
+    ]
+  }
+]

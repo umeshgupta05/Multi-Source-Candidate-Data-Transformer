@@ -53,14 +53,17 @@ class ResumeLLMExtractor(BaseExtractor):
     def _extract_file(self, path: Path) -> list[RawFieldValue]:
         self.last_error = None
         try:
-            raw_response = self._call_qwen_for_path(path)
+            text = self._read_text(path)
+            if not text or not text.strip():
+                raise ValueError("empty resume text")
+            raw_response = self._call_qwen_for_text(text)
             data = self._parse_json_response(raw_response)
         except Exception as exc:
             self.last_error = str(exc)
             logger.warning("[%s] Qwen extraction skipped for %s: %s", self.source_name, path, self.last_error)
             return []
 
-        rfvs = self._json_to_rfvs(data, str(path))
+        rfvs = self._json_to_rfvs(data, str(path), resume_text=text)
         logger.info("[%s] Extracted %d fields from %s", self.source_name, len(rfvs), path)
         return rfvs
 
@@ -78,7 +81,10 @@ class ResumeLLMExtractor(BaseExtractor):
         text = self._read_text(path)
         if not text or not text.strip():
             raise ValueError("empty resume text")
+        return self._call_qwen_for_text(text)
 
+    def _call_qwen_for_text(self, text: str) -> str:
+        """Call Qwen for already-extracted resume text."""
         provider = os.getenv("QWEN_PROVIDER", "hf_vlm").lower()
         if provider in {"hf_vlm", "huggingface_vlm", "hf"}:
             return self._call_huggingface_vlm_text(text)
@@ -136,13 +142,19 @@ class ResumeLLMExtractor(BaseExtractor):
     def _parse_json_response(self, response: str) -> dict[str, Any]:
         return qwen_client.parse_qwen_json(response)
 
-    def _json_to_rfvs(self, data: dict[str, Any], file_path: str) -> list[RawFieldValue]:
+    def _json_to_rfvs(
+        self,
+        data: dict[str, Any],
+        file_path: str,
+        resume_text: str | None = None,
+    ) -> list[RawFieldValue]:
         return qwen_client.qwen_json_to_rfvs(
             data,
             file_path,
             source=self.source_name,
             method=_METHOD,
             confidence=_CONF_LLM,
+            fallback_text=resume_text,
         )
 
     @staticmethod

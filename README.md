@@ -2,6 +2,212 @@
 
 Python pipeline for ingesting candidate data from multiple sources, resolving records that refer to the same person, merging fields with provenance and confidence scoring, and projecting the result into a runtime-configurable JSON shape.
 
+## Install And Run First
+
+These steps are the expected way to install, run, test, and inspect the project from a fresh clone.
+
+### 1. Clone The Repository
+
+```powershell
+git clone https://github.com/umeshgupta05/Multi-Source-Candidate-Data-Transformer.git
+cd Multi-Source-Candidate-Data-Transformer
+```
+
+If you already have the folder locally, open a terminal in the project root, the folder that contains `pyproject.toml`, `README.md`, `src/`, `sources/`, and `configs/`.
+
+### 2. Create And Activate A Virtual Environment
+
+Windows PowerShell:
+
+```powershell
+py -3.10 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+```
+
+If PowerShell blocks activation, run this once for the current terminal session and activate again:
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+.\.venv\Scripts\Activate.ps1
+```
+
+macOS/Linux:
+
+```bash
+python3.10 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+```
+
+Python 3.10 or newer is required. The project has also been tested locally with Python 3.13.
+
+### 3. Install Dependencies
+
+For normal app usage:
+
+```powershell
+pip install -e .
+```
+
+For development and tests:
+
+```powershell
+pip install -e ".[dev]"
+```
+
+For optional LLM resume extraction with Qwen/Hugging Face/OpenAI-compatible endpoints:
+
+```powershell
+pip install -e ".[dev,llm]"
+```
+
+If extras are unavailable in your shell, install from `requirements.txt` instead:
+
+```powershell
+pip install -r requirements.txt
+```
+
+### 4. Run The Web App
+
+Start the FastAPI app:
+
+```powershell
+candidate-transformer
+```
+
+Alternative direct command:
+
+```powershell
+uvicorn candidate_transformer.app:app --reload
+```
+
+Open the UI:
+
+```text
+http://localhost:8000
+```
+
+If port `8000` is already in use:
+
+```powershell
+uvicorn candidate_transformer.app:app --reload --port 8001
+```
+
+Then open:
+
+```text
+http://localhost:8001
+```
+
+### 5. Run The Sample Data In The UI
+
+1. Open the app in the browser.
+2. In `Source Data`, choose `Use Sample Data`.
+3. Choose which sample sources to run: recruiter CSV, ATS JSON, GitHub URLs, and/or resume PDFs.
+4. Choose `Resume Extraction` mode:
+   - `Regex`: deterministic parser, no model or API key required.
+   - `LLM (Qwen)`: Qwen-only resume extraction.
+   - `Both`: runs regex and Qwen and lets the merger combine evidence.
+5. In `Output Configuration`, select `default`, `minimal`, or `strict_email`.
+6. Click `Run Pipeline`.
+7. Review `Run Summary`, `Conflicts & Rejections`, candidate cards, confidence, provenance, and validation errors.
+8. The app writes run output to `output/candidates_<run_id>.json`.
+
+### 6. Upload Custom Inputs In The UI
+
+Use `Upload Files` when testing your own data:
+
+- Recruiter CSV: `.csv`
+- ATS JSON: `.json`
+- GitHub profiles: `.txt` with one username or GitHub URL per line
+- Resumes: `.pdf` or `.docx`
+- Optional projection config: `.json`
+
+The upload tab has a clear/reset control so you can remove selected files before rerunning.
+
+### 7. Optional LLM Configuration
+
+Regex mode does not need an API key. LLM mode needs a provider configuration.
+
+Hugging Face router example:
+
+```powershell
+$env:HF_TOKEN = "your_hugging_face_token"
+$env:QWEN_PROVIDER = "hf_vlm"
+$env:QWEN_HF_MODEL = "Qwen/Qwen2.5-VL-32B-Instruct:novita"
+candidate-transformer
+```
+
+OpenAI-compatible endpoint example:
+
+```powershell
+$env:QWEN_PROVIDER = "openai"
+$env:QWEN_OPENAI_BASE_URL = "https://your-provider.example.com/v1"
+$env:QWEN_API_KEY = "your_api_key"
+$env:QWEN_MODEL = "your-qwen-model"
+candidate-transformer
+```
+
+Local Ollama fallback is supported when enabled by environment and when Ollama exposes an OpenAI-compatible endpoint:
+
+```powershell
+$env:QWEN_OLLAMA_FALLBACK = "true"
+$env:QWEN_OLLAMA_URL = "http://localhost:11434/v1"
+$env:QWEN_OLLAMA_MODEL = "qwen2.5vl:3b"
+candidate-transformer
+```
+
+You can put environment variables in either:
+
+- `.env` at the project root
+- `src/candidate_transformer/extractors/.env`
+
+Restart the server after changing `.env` values. Do not commit real API tokens.
+
+### 8. Run Headless From Python
+
+Run the full sample pipeline and write output:
+
+```powershell
+python -c "from candidate_transformer.pipeline import run_pipeline; r = run_pipeline(csv_path='sources/recruiter.csv', ats_path='sources/ats.json', github_urls_path='sources/github_urls.txt', resumes_path='sources/resumes', config_path='configs/default.json', output_path='output/candidates_sample.json', resume_extraction_mode='regex'); print(r.stats.print_summary())"
+```
+
+Run only resumes with regex:
+
+```powershell
+python -c "from candidate_transformer.pipeline import run_pipeline; r = run_pipeline(resumes_path='sources/resumes', config_path='configs/default.json', output_path='output/candidates_resumes_regex.json', resume_extraction_mode='regex'); print(r.stats.print_summary())"
+```
+
+Run only resumes with LLM:
+
+```powershell
+python -c "from candidate_transformer.pipeline import run_pipeline; r = run_pipeline(resumes_path='sources/resumes', config_path='configs/default.json', output_path='output/candidates_resumes_llm.json', resume_extraction_mode='llm'); print(r.stats.print_summary())"
+```
+
+Run regex and LLM together:
+
+```powershell
+python -c "from candidate_transformer.pipeline import run_pipeline; r = run_pipeline(resumes_path='sources/resumes', config_path='configs/default.json', output_path='output/candidates_resumes_both.json', resume_extraction_mode='both'); print(r.stats.print_summary())"
+```
+
+### 9. Run Tests
+
+```powershell
+pytest tests/ -v
+```
+
+Current coverage includes extractors, normalizers, entity resolution, merging/confidence, projection, validation, LLM JSON conversion, and edge cases.
+
+### 10. Troubleshooting
+
+- `candidate-transformer` is not recognized: activate `.venv`, then run `pip install -e .` again.
+- `ModuleNotFoundError`: make sure the virtual environment is active and dependencies are installed.
+- App starts but browser cannot connect: check the terminal for the actual port, or run `uvicorn candidate_transformer.app:app --reload --port 8001`.
+- LLM mode returns no fields: check `HF_TOKEN`/`HUGGINGFACEHUB_API_TOKEN`, provider variables, network access, and the UI error feedback.
+- Resume location looks wrong in LLM mode: rerun after restarting the server so the latest prompt and source-text reconciliation code is loaded.
+- Generated outputs are written under `output/`; committed sample run outputs may be overwritten by later local runs.
+
 The core design rule is: wrong-but-confident is worse than honestly-empty. The pipeline is deterministic and explainable; the merge and confidence logic does not use ML or LLM decisioning.
 
 ## Pipeline

@@ -342,6 +342,21 @@ class TestGitHubReadmeExtraction:
         assert GitHubExtractor._normalize_username("github.com/octocat?tab=repositories") == "octocat"
         assert GitHubExtractor._normalize_username("\ufeffsindresorhus") == "sindresorhus"
 
+    def test_extract_accepts_github_profile_url_lines(self, tmp_path, monkeypatch):
+        github_file = tmp_path / "github_urls.txt"
+        github_file.write_text("https://github.com/octocat?tab=repositories\n", encoding="utf-8")
+        seen: list[str] = []
+        ext = GitHubExtractor(readme_llm_enabled=False)
+
+        def fake_extract_user(username: str):
+            seen.append(username)
+            return []
+
+        monkeypatch.setattr(ext, "_extract_user", fake_extract_user)
+
+        assert ext.extract(github_file) == []
+        assert seen == ["octocat"]
+
     def test_profile_readme_regex_extracts_skills_links_and_headline(self, monkeypatch):
         monkeypatch.setenv("QWEN_GITHUB_README_LLM", "false")
         readme = """

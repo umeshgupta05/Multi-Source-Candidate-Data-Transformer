@@ -1,6 +1,7 @@
-# GitHub usernames — one per line.
+# GitHub usernames or profile URLs — one per line.
 # These call the live GitHub API; leave empty or comment out lines
 # if you don't want API calls during the sample run.
 #
-# Example: uncomment a real username below to test.
+# Example: uncomment a real username or URL below to test.
 # octocat
+# https://github.com/octocat
